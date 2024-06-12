@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.model.feedback import Feedback
+from src.server.model.feedback import Feedback
 
 
 @dataclass

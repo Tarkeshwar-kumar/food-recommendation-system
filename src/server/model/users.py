@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.auth.auth import Auth
+from src.server.auth.auth import Auth
 
 @dataclass
 class User:
