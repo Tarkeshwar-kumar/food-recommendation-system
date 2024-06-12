@@ -12,6 +12,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     password = input("Enter password: ")
 
     auth_request = {
+        "request_type": "auth",
         "user_id": user_id, 
         "password": password
     }
