@@ -8,9 +8,11 @@ options = {
         "E": "View menu"
     },
     "chef_options": {
-
+        "A": "Roll out food recommendation",
+        "B": "View menu"
     },
     "employee_options": {
-
+        "A": "Give feedback on food",
+        "B": "Vote for food recommended by chef"
     }
 }

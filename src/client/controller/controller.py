@@ -8,23 +8,12 @@ class User:
         self.user_id = "user-id"
         self.role = "role"
 
-    def display_options():
+    def display_options(self):
         pass
-    
-class Employee(User):
-    
-    def display_options():
-        for option in options['user_option']:
-            print(option)
 
-class Chef(User):
-    
-    def display_options():
-        for option in options['chef_options']:
-            print(option)
+    def view_menu(self):
+        pass
 
-class Admin(User):
-    
-    def display_options():
-        for option in options['employee_options']:
-            print(option)
+    def choose_action(self):
+        pass
+   

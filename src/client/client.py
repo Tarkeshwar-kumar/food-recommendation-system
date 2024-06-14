@@ -2,6 +2,7 @@ import socket
 import json
 from client.menu.options import Auth
 from client.controller.controller import User, Employee, Chef, Admin
+from client.exception.exceptions import NotAuthoriseError
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
@@ -14,7 +15,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     received = Auth.authentication()
     
     if not received['isAuthenticated']:
-        raise Exception
+        raise NotAuthoriseError(
+            "You are not authorized to access app. Please contact admin."
+        )
     if received['user'] == "Employee":
         user = Employee()
     elif received['user'] == 'Chef':
