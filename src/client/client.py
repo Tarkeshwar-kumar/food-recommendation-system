@@ -1,26 +1,25 @@
 import socket
 import json
+from client.menu.options import Auth
+from client.controller.controller import User, Employee, Chef, Admin
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     client.connect(("localhost", 5000))
 
     print("WELCOME TO FOOD RECOMMENDATION APP")
-    
     print("Please Login")
 
-    user_id = input("Enter user id: ")
-    password = input("Enter password: ")
+    
+    received = Auth.authentication()
+    
+    if not received['isAuthenticated']:
+        raise Exception
+    if received['user'] == "Employee":
+        user = Employee()
+    elif received['user'] == 'Chef':
+        user = Chef()
+    else:
+        user = Admin()
 
-    auth_request = {
-        "request_type": "auth",
-        "user_id": user_id, 
-        "password": password
-    }
-
-
-    auth_request_data = json.dumps(auth_request)
-
-    client.sendall(bytes(auth_request_data,encoding="utf-8"))
-    received = client.recv(1024)
-
-print(received)
+    user.display_options()
