@@ -1,4 +1,3 @@
-from client.menu.options import options
 
 class User:
     user_id: str
