@@ -2,6 +2,9 @@ USE foodApp;
 DROP TABLE `User`;
 DROP TABLE `Menu`;
 DROP TABLE `Food`;
+
+DROP TABLE `Feedback`;
+
 CREATE TABLE User(
     user_id VARCHAR(30),
     user_name VARCHAR(30),
@@ -44,16 +47,29 @@ INSERT INTO Food (food_id, food_name, price, availability_status, avg_rating, fo
 (9, 'Pasta Carbonara', 13.99, TRUE, 0, 'Dinner', 1),
 (10, 'Tiramisu', 6.49, TRUE, 0, 'Dessert', 1);
 
+INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES 
+(1, 'RecommendedMenu', NOW());
+
+CREATE TABLE RecommendedFood (
+    food_name VARCHAR(100) PRIMARY KEY,
+    total_vote INT,
+    menu_id INT,
+    FOREIGN KEY (menu_id) REFERENCES Menu(menu_id)
+);
 
 CREATE TABLE Feedback (
-    FeedbackID INT PRIMARY KEY,
-    FeedbackMessage TEXT NOT NULL,
-    UserID INT,
+    feedback_id INT AUTO_INCREMENT PRIMARY KEY,
+    message VARCHAR(300) NOT NULL,
+    rating INT NOT NULL,
+    sentiment VARCHAR(300),
+    is_liked BOOLEAN,
     Timestamp DATETIME NOT NULL,
-    MenuID INT,
-    FOREIGN KEY (UserID) REFERENCES User(UserID),
-    FOREIGN KEY (MenuID) REFERENCES Menu(MenuID)
+    user_id VARCHAR(30),
+    food_id INT,
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
+    FOREIGN KEY (food_id) REFERENCES Food(food_id)
 );
+
 
 
 CREATE TABLE Notificationtype (
@@ -70,22 +86,4 @@ CREATE TABLE Notification (
     Timestamp DATETIME NOT NULL,
     FOREIGN KEY (UserID) REFERENCES User(UserID),
     FOREIGN KEY (NotificationTypeID) REFERENCES Notificationtype(NotificationTypeID)
-);
-
-
-CREATE TABLE RecommendedMenu (
-    RecommendedMenuID INT PRIMARY KEY,
-    MenuID INT,
-    UserID INT,
-    FOREIGN KEY (MenuID) REFERENCES Menu(MenuID),
-    FOREIGN KEY (UserID) REFERENCES User(UserID)
-);
-
-
-CREATE TABLE RecommendedFood (
-    RecommendedFoodID INT PRIMARY KEY,
-    FoodID INT,
-    UserID INT,
-    FOREIGN KEY (FoodID) REFERENCES Food(FoodID),
-    FOREIGN KEY (UserID) REFERENCES User(UserID)
 );

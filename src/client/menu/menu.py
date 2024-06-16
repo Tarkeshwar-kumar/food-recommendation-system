@@ -14,6 +14,7 @@ options = {
     "employee_options": {
         "A": "Give feedback on food",
         "B": "Vote for food recommended by chef",
-        "C": "View Menu"
+        "C": "View Menu",
+        "D": "See Notifications"
     }
 }

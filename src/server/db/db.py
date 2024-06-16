@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-
+from server.model.food import Food
 class DatabaseConnection:
    def __init__(self):
        self.host = "localhost"
@@ -46,12 +46,13 @@ class DatabaseMethods:
             user_id, user_name, role = response[0][0], response[0][1], response[0][2]
             return user_id, user_name, role
 
-    def insert_item_to_menu():
+    def insert_item_to_menu(self, food: Food):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
                 f"""
-                    INSERT INTO menu value ()
+                    INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id) VALUES
+                    ('{food.food_name}', {food.price}, {food.availability_status}, {food.avg_rating}, '{food.food_type}', 1);
                 """
             )
             print(response)
@@ -85,3 +86,27 @@ class DatabaseMethods:
                 """
             )
             print(response)
+
+    def insert_item_for_recommendation(self, food: Food):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            response = cursor.execute(
+                f"""
+                    INSERT INTO RecommendedFood (food_name, total_vote, menu_id) VALUES
+                    ('{food.food_name}',0, 2);
+                """
+            )
+            print(response)
+
+    def food_exists_in_menu(self, food_name) -> bool:
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            response = cursor.execute(
+                f"""
+                    SELECT * From Food WHERE foos_name={food_name}
+                """
+            )
+            response = cursor.fetchall()
+            if len(response[0]) > 0:
+                return True
+            return False

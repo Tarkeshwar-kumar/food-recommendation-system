@@ -26,19 +26,42 @@ class Admin(User):
         print(client.recv(1024))
 
     def remove_food_item_from_menu(self, client):
+        food_name = input("Enter food name: ")
         request= {
-            "request_type": ""
+            "request_type": "remove_item_from_menu",
+            "food_name": food_name
         }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
 
     def change_food_item_price(self, client):
+        food_name = input("Enter food name: ")
+        price = float(input("Enter food price: "))
         request= {
-            "request_type": ""
+            "request_type": "change_food_price",
+            "food_name": food_name,
+            "new_price": price
         }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
 
     def change_food_item_availability(self, client):
+        food_name = input("Enter food name: ")
+        availability = float(input("Is food available?: "))
+        availability = True if availability=="Yes" else False
         request= {
-            "request_type": ""
+            "request_type": "change_food_availability",
+            "food_name": food_name,
+            "availability": availability
         }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
 
     def choose_action(self, client):
         action = input("Choose action: ")
