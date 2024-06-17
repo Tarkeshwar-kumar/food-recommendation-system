@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from abc import ABCMeta, abstractmethod
 from server.db.db import DatabaseMethods
-from server.model.food import Food, Feedback
-from server.validators.validation import is_valid_food
+from server.model.food import Food
+from server.validators.validation import is_valid_food, is_valid_feedback
+from server.model.feedback import Feedback
 
 @dataclass
 class User:
@@ -63,8 +64,10 @@ class Admin(User, AdminService):
 @dataclass
 class Employee(User):
     
-    def give_feedback_on_food():
-        pass
+    def give_feedback_on_food(self, feedback: Feedback):
+        if is_valid_feedback(feedback.food_name, feedback.user_id):
+            db = DatabaseMethods()
+            db.insert_into_feedback(feedback)
 
     def vote_food_remmended():
         pass
@@ -78,10 +81,12 @@ class AdminService(metaclass = ABCMeta):
 class Chef(User, AdminService):
     
     def rollout_food_recommendation(self, food_list):
+
         for food in food_list:
             if not is_valid_food(food):
                 raise ValueError("Food name is not valid")
-            
+        
+        db = DatabaseMethods()
+        db.delete_table()
         for food in food_list:
-            db = DatabaseMethods()
             db.insert_item_for_recommendation(food)

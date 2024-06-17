@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 from server.model.food import Food
+from server.model.feedback import Feedback
 class DatabaseConnection:
    def __init__(self):
        self.host = "localhost"
@@ -55,6 +56,8 @@ class DatabaseMethods:
                     ('{food.food_name}', {food.price}, {food.availability_status}, {food.avg_rating}, '{food.food_type}', 1);
                 """
             )
+            connection.commit() 
+            response = cursor.fetchall()
             print(response)
         
     def update_food_price():
@@ -87,26 +90,68 @@ class DatabaseMethods:
             )
             print(response)
 
-    def insert_item_for_recommendation(self, food: Food):
+    def insert_item_for_recommendation(self, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
-                f"""
-                    INSERT INTO RecommendedFood (food_name, total_vote, menu_id) VALUES
-                    ('{food.food_name}',0, 2);
                 """
+                INSERT INTO RecommendedFood (food_name, total_vote, menu_id)
+                VALUES (%s, %s, %s);
+                """,
+                (food_name, 0, 2)
             )
+            connection.commit() 
+            response = cursor.fetchall()
             print(response)
+            print("Item inserted successfully")
 
     def food_exists_in_menu(self, food_name) -> bool:
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
                 f"""
-                    SELECT * From Food WHERE foos_name={food_name}
+                    SELECT * From Food WHERE food_name='{food_name}';
                 """
             )
             response = cursor.fetchall()
+            print(response)
             if len(response[0]) > 0:
                 return True
             return False
+    
+    def delete_table(self):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    DELETE FROM RecommendedFood;"
+                """
+            )
+
+    def is_valid_feedback(self, food_name: str, user_id: str):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    SELECT * from Feedback WHERE food_name='{food_name}' and user_id='{user_id}';"
+                """
+            )
+            response = cursor.fetchall()
+            print(response)
+            if len(response) == 0:
+                return True
+            return False
+
+    def insert_into_feedback(self, feedback: Feedback):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            print("feedback", feedback)
+            cursor.execute(
+                """
+                INSERT INTO Feedback (message, rating, sentiment, is_liked, user_id, food_name)
+                VALUES (%s, %s, %s, %s, %s, %s);
+                """,
+                (feedback.comments, feedback.rating, feedback.sentiment, feedback.is_liked, feedback.user_id, feedback.food_name)
+            )
+            connection.commit() 
+            print("Item inserted successfully")

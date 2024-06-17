@@ -5,6 +5,8 @@ from server.model.user_factory import UserFactory
 from server.db.db import DatabaseMethods
 from typing import Any, Dict, Tuple
 from server.model.food import Food
+from server.model.feedback import Feedback
+from server.utils.sentiment import RuleBasedSentiment
 
 class Server:
     def __init__(self, host: str, port: int):
@@ -95,11 +97,20 @@ def handle_request(user: User, json_data):
     elif request_type == "remove_item_from_menu":
         return user.remove_item_from_menu(json_data["new_price"])
     elif request_type == "give_feedback":
-        return user.give_feedback(json_data["item_id"], json_data["feedback"])
+        sentiment_analyzer = RuleBasedSentiment()
+        feedback = Feedback(
+            food_name = json_data['food_name'],
+            comments= json_data['comment'],
+            rating= json_data['rating'],
+            is_liked= True if json_data['is_liked'] == "Yes" else False,
+            user_id=user.user_id,
+            sentiment=sentiment_analyzer.get_sentiment(json_data['comment'])['Sentiment']
+        )
+        return user.give_feedback_on_food(feedback)
     elif request_type == "vote":
         return user.vote_food_recommended(json_data["item_id"], json_data["feedback"])
     elif request_type == "rollout_recommendation":
-        return user.rollout_food_recommendation(json_data["recommended_food"], json_data["feedback"])
+        return user.rollout_food_recommendation(json_data["recommended_food"])
     else:
         return {"status": "error", "message": "Invalid request"}
 

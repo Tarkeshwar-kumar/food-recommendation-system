@@ -9,3 +9,9 @@ def is_valid_food(food) -> bool:
     if db.food_exists_in_menu(food):
         return True
     return False
+
+def is_valid_feedback(food_name: str, user_id: str):
+    db = DatabaseMethods()
+    if db.is_valid_feedback(food_name, user_id):
+        return True
+    return False
