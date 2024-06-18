@@ -1,5 +1,6 @@
 import socket
 import json
+import threading
 from server.model.users import User, Admin, Employee, Chef
 from server.model.user_factory import UserFactory
 from server.db.db import DatabaseMethods
@@ -8,28 +9,35 @@ from server.model.food import Food
 from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
 from server.model.notification import Notification, AddItemNotification, RemoveItemNotification
-from server.db.db import DatabaseMethods
 from server.exception.exceptions import FoodDoesNotExist
+
 class Server:
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
-        self.conn = None
-        self.addr = None
         self.server = None
 
-    def start_server(self) -> Tuple[Any, Any, Any]:
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind(("localhost", 5000))
-        server.listen()
-        print("Server listening on port 5000")
-        conn, addr = server.accept()
-        print(f"Connected by {addr}")
-        return conn, addr, server
+    def start_server(self):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((self.host, self.port))
+        self.server.listen()
+        print(f"Server listening on {self.host}:{self.port}")
+        
+        while True:
+            conn, addr = self.server.accept()
+            print(f"Connected by {addr}")
+            threading.Thread(target=self.handle_client, args=(conn, addr)).start()
+
+    def handle_client(self, conn, addr):
+        try:
+            request_handler = RequestHandler(conn)
+            request_handler.handle_requests()
+        except Exception as e:
+            print(f"Exception handling client {addr}: {e}")
+        finally:
+            conn.close()
 
     def stop_server(self):
-        if self.conn:
-            self.conn.close()
         if self.server:
             self.server.close()
 
@@ -58,9 +66,7 @@ class RequestHandler:
             try:
                 return self.handle_auth(json_data)
             except Exception as e:
-                return {
-                    "isAuthenticated": False
-                }
+                return {"isAuthenticated": False}
         else:
             return self.handle_other_requests(json_data)
         
@@ -89,9 +95,9 @@ def handle_request(user: User, json_data):
     elif request_type == "add_item_to_menu":
         food = Food(
             food_name=json_data["food_name"],
-            price= json_data["price"],
-            availability_status = True,
-            category= json_data["food_type"],
+            price=json_data["price"],
+            availability_status=True,
+            category=json_data["food_type"],
             avg_rating=0,
             feedbacks=[],
             food_type=json_data["food_type"]
@@ -108,21 +114,18 @@ def handle_request(user: User, json_data):
     elif request_type == "remove_item_from_menu":
         db = DatabaseMethods()
         if not db.food_exists_in_menu(json_data['food_name']):
-            return {
-                "response" : FoodDoesNotExist(f"Food {json_data['food_name']} doesn\'t exist")
-            }
+            return {"response": FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")}
         else:
             notification = RemoveItemNotification()
             notification.send_notification(json_data["food_name"])
             user.remove_item_from_menu(json_data["new_price"])
-
     elif request_type == "give_feedback":
         sentiment_analyzer = RuleBasedSentiment()
         feedback = Feedback(
-            food_name = json_data['food_name'],
-            comments= json_data['comment'],
-            rating= json_data['rating'],
-            is_liked= True if json_data['is_liked'] == "Yes" else False,
+            food_name=json_data['food_name'],
+            comments=json_data['comment'],
+            rating=json_data['rating'],
+            is_liked=True if json_data['is_liked'] == "Yes" else False,
             user_id=user.user_id,
             sentiment=sentiment_analyzer.get_sentiment(json_data['comment'])['Sentiment']
         )
@@ -134,18 +137,10 @@ def handle_request(user: User, json_data):
     else:
         return {"status": "error", "message": "Invalid request"}
 
-
 if __name__ == "__main__":
-    server = Server("localhost", 8000)
+    server = Server("localhost", 5000)
     try:
-        conn, addr, server_instance = server.start_server()
-        server.conn = conn
-        server.addr = addr
-        server.server = server_instance
-
-        request_handler = RequestHandler(conn)
-        request_handler.handle_requests()
-
+        server.start_server()
     except KeyboardInterrupt:
         print("\nCaught keyboard interrupt, exiting")
     finally:

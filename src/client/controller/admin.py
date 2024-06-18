@@ -23,7 +23,8 @@ class Admin(User):
         request_data = json.dumps(request)
 
         client.sendall(bytes(request_data,encoding="utf-8"))
-        print(client.recv(1024))
+        received = client.recv(1024)
+        response = json.loads(received.decode().replace("'", '"'))
 
     def remove_food_item_from_menu(self, client):
         food_name = input("Enter food name: ")
@@ -34,7 +35,9 @@ class Admin(User):
         request_data = json.dumps(request)
 
         client.sendall(bytes(request_data,encoding="utf-8"))
-        print(client.recv(1024))
+        received = client.recv(1024)
+        response = json.loads(received.decode().replace("'", '"'))
+        print(response['response'])
 
     def change_food_item_price(self, client):
         food_name = input("Enter food name: ")

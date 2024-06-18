@@ -115,7 +115,7 @@ class DatabaseMethods:
             )
             response = cursor.fetchall()
             print(response)
-            if len(response[0]) > 0:
+            if len(response) > 0:
                 return True
             return False
     
