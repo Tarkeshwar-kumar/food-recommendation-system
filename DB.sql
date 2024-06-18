@@ -15,18 +15,13 @@ CREATE TABLE User(
     PRIMARY KEY(user_id)
 )
 
-INSERT INTO User (user_id, user_name, password, role) VALUES 
-(1, 'Pablo', 'pablo_admin', 'Admin'),
-(2, 'Tarak', 'tarak_employee', 'Employee'),
-(3, 'Ankit', 'ankit_chef', 'Chef');
 
 CREATE TABLE Menu (
     menu_id INT PRIMARY KEY,
     menu_name VARCHAR(100) NOT NULL,
     Timestamp DATETIME NOT NULL
 );
-INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES 
-(2, 'RecommendedMenu', NOW());
+
 CREATE TABLE Food (
     food_name VARCHAR(100)  PRIMARY KEY NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
@@ -36,29 +31,20 @@ CREATE TABLE Food (
     menu_id INT,
     FOREIGN KEY (menu_id) REFERENCES Menu(menu_id)
 );
-INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id) VALUES 
-('Pancakes', 5.99, TRUE, 0, 'Breakfast', 1),
-('Omelette', 6.99, TRUE, 0, 'Breakfast', 1),
-('French Toast', 7.49, TRUE, 0, 'Breakfast', 1),
-('Burger', 8.99, TRUE, 0, 'Lunch', 1),
-('Caesar Salad', 7.99, TRUE, 0, 'Lunch', 1),
-('Chicken Sandwich', 9.49, TRUE, 0, 'Lunch', 1),
-('Steak', 14.99, FALSE, 0, 'Dinner', 1),
-('Grilled Salmon', 16.99, TRUE, 0, 'Dinner', 1),
-('Pasta Carbonara', 13.99, TRUE, 0, 'Dinner', 1),
-('Tiramisu', 6.49, TRUE, 0, 'Dessert', 1);
 
-INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES 
-(1, 'RecommendedMenu', NOW());
+
+
 
 CREATE TABLE Vote (
-    user_id VARCHAR(30) PRIMARY KEY,
-    have_voted BOOLEAN 
+    user_id VARCHAR(30),
+    have_voted BOOLEAN,
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
 );
 
 CREATE TABLE RecommendedFood (
-    food_name VARCHAR(100) PRIMARY KEY,
-    total_vote INT
+    food_name VARCHAR(100),
+    total_vote INT,
+    FOREIGN KEY (food_name) REFERENCES Food(food_name)
 );
 
 CREATE TABLE Feedback (
