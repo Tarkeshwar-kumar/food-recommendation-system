@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from abc import ABCMeta, abstractmethod
 from server.db.db import DatabaseMethods
 from server.model.food import Food
-from server.validators.validation import is_valid_food, is_valid_feedback
+from server.validators.validation import is_valid_food, is_valid_feedback, have_not_voted
 from server.model.feedback import Feedback
 
 @dataclass
@@ -69,8 +69,10 @@ class Employee(User):
             db = DatabaseMethods()
             db.insert_into_feedback(feedback)
 
-    def vote_food_remmended():
-        pass
+    def vote_food_recommended(user_id: str, food_name: str):
+        if have_not_voted(user_id):
+            db = DatabaseMethods()
+            db.vote_for_food_item(user_id, food_name)
 
 class AdminService(metaclass = ABCMeta):
     @abstractmethod

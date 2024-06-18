@@ -108,7 +108,7 @@ def handle_request(user: User, json_data):
         )
         return user.give_feedback_on_food(feedback)
     elif request_type == "vote":
-        return user.vote_food_recommended(json_data["item_id"], json_data["feedback"])
+        return user.vote_food_recommended(user.user_id, json_data["food_name"])
     elif request_type == "rollout_recommendation":
         return user.rollout_food_recommendation(json_data["recommended_food"])
     else:

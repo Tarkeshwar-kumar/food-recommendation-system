@@ -51,11 +51,14 @@ INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, 
 INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES 
 (1, 'RecommendedMenu', NOW());
 
+CREATE TABLE Vote (
+    user_id VARCHAR(30) PRIMARY KEY,
+    have_voted BOOLEAN 
+);
+
 CREATE TABLE RecommendedFood (
     food_name VARCHAR(100) PRIMARY KEY,
-    total_vote INT,
-    menu_id INT,
-    FOREIGN KEY (menu_id) REFERENCES Menu(menu_id)
+    total_vote INT
 );
 
 CREATE TABLE Feedback (

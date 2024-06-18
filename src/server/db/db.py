@@ -155,3 +155,31 @@ class DatabaseMethods:
             )
             connection.commit() 
             print("Item inserted successfully")
+
+    def have_not_voted(self, user_id: str):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    SELECT * FROM Vote where user_id='{user_id}' and have_voted=False;
+                """
+            )
+            response = cursor.fetchall()
+            print(response)
+            if len(response) == 0:
+                return True
+            return False
+        
+    def vote_for_food_item(food_name: str, user_id: str):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    SELECT * FROM Vote where user_id='{user_id}' and have_voted=False;
+                """
+            )
+            response = cursor.fetchall()
+            print(response)
+            if len(response) == 0:
+                return True
+            return False
