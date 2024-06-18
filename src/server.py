@@ -7,6 +7,7 @@ from typing import Any, Dict, Tuple
 from server.model.food import Food
 from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
+from server.model.notification import Notification, AddItemNotification, RemoveItemNotification
 
 class Server:
     def __init__(self, host: str, port: int):
@@ -53,7 +54,12 @@ class RequestHandler:
 
     def process_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         if json_data["request_type"] == "auth":
-            return self.handle_auth(json_data)
+            try:
+                return self.handle_auth(json_data)
+            except Exception as e:
+                return {
+                    "isAuthenticated": False
+                }
         else:
             return self.handle_other_requests(json_data)
         
@@ -89,12 +95,18 @@ def handle_request(user: User, json_data):
             feedbacks=[],
             food_type=json_data["food_type"]
         )
-        return user.add_item_to_menu(food)
+        notification = AddItemNotification()
+        user.add_item_to_menu(food)
+        notification.send_notification(json_data["food_name"])
     elif request_type == "change_food_price":
         return user.change_food_price(json_data["food_name"], json_data["new_price"])
     elif request_type == "change_food_availability":
+        notification = AddItemNotification()
+        notification.send_notification(json_data["food_name"])
         return user.change_food_availability(json_data["new_price"], json_data["availability"])
     elif request_type == "remove_item_from_menu":
+        notification = RemoveItemNotification()
+        notification.send_notification(json_data["food_name"])
         return user.remove_item_from_menu(json_data["new_price"])
     elif request_type == "give_feedback":
         sentiment_analyzer = RuleBasedSentiment()

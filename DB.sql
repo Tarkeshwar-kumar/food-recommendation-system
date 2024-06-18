@@ -15,6 +15,10 @@ CREATE TABLE User(
     PRIMARY KEY(user_id)
 )
 
+INSERT INTO User (user_id, user_name, password, role) VALUES 
+(7, 'Venkat', 'venkat_employee', 'Employee'),
+(8, 'Harshita', 'harshita_employee', 'Employee'),
+(9, 'Kader', 'kader_employee', 'Employee');
 
 CREATE TABLE Menu (
     menu_id INT PRIMARY KEY,
@@ -65,12 +69,19 @@ CREATE TABLE Notificationtype (
     notification_type_id INT PRIMARY KEY,
     notification_type VARCHAR(100) NOT NULL
 );
-
+INSERT INTO Notificationtype (notification_type_id, notification_type) VALUES
+(1, "ADD_ITEM"),
+(2, "REMOVE_ITEM"),
+(3, "FOOD_AVAILABLE"),
+(4, "FOOD_UNAVAILABLE");
 
 CREATE TABLE Notification (
-    notification_id INT PRIMARY KEY,
-    notification_message TEXT NOT NULL,
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(30),
     notification_type_id INT,
     Timestamp DATETIME NOT NULL,
-    FOREIGN KEY (notification_type_id) REFERENCES Notificationtype(notification_type_id)
+    food_name VARCHAR(100) NOT NULL,
+    FOREIGN KEY (notification_type_id) REFERENCES Notificationtype(notification_type_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
+    FOREIGN KEY (food_name) REFERENCES Food(food_name)
 );

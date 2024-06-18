@@ -1,12 +1,12 @@
 import json 
 import socket
-
+from getpass import getpass
 
 class Auth:
 
     def authentication(client: socket.socket):
         user_id = input("Enter user id: ")
-        password = input("Enter password: ")
+        password = getpass('Enter your password: ')
 
         auth_request = {
             "request_type": "auth",

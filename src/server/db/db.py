@@ -60,7 +60,7 @@ class DatabaseMethods:
             response = cursor.fetchall()
             print(response)
         
-    def update_food_price():
+    def update_food_price(self, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
@@ -70,7 +70,7 @@ class DatabaseMethods:
             )
             print(response)
 
-    def update_food_availability():
+    def update_food_availability(self, food_name:str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
@@ -80,12 +80,12 @@ class DatabaseMethods:
             )
             print(response)
 
-    def delete_item_from_menu():
+    def delete_item_from_menu(self, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
                 f"""
-                    INSERT INTO menu value ()
+                    DELETE FROM Food WHERE food_name='{food_name}';
                 """
             )
             print(response)
@@ -170,7 +170,7 @@ class DatabaseMethods:
                 return True
             return False
         
-    def vote_for_food_item(food_name: str, user_id: str):
+    def vote_for_food_item(self, food_name: str, user_id: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             cursor.execute(
@@ -183,3 +183,44 @@ class DatabaseMethods:
             if len(response) == 0:
                 return True
             return False
+        
+    def display_menu(self):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    SELECT * FROM Food WHERE menu_id=1;
+                """
+            )
+            response = cursor.fetchall()
+            print(response)
+
+    def get_epmloyee_list(self):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    SELECT user_id FROM User WHERE role='Employee';
+                """
+            )
+            response = cursor.fetchall()
+            user_id_list = []
+            for user_id in response:
+                print("user ", user_id)
+                user_id_list.append(user_id)
+
+            print("employee list", user_id_list)
+
+            return user_id_list
+        
+    def insert_notification(self, user_id, notification_type_id, food_name):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    INSERT INTO Notification (user_id, notification_type_id, Timestamp, food_name) 
+                    VALUES (%s, %s, NOW(), %s)
+                """,
+                (user_id, notification_type_id, food_name)
+            )
+            connection.commit()

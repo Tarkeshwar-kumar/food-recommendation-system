@@ -16,8 +16,10 @@ class User:
 
         db.authenticate(self.user_id, self._password)
 
-    def display_menu():
-        pass
+    def display_menu(self):
+        db = DatabaseMethods()
+        db.display_menu()
+
 
 
 class AdminService(metaclass = ABCMeta):

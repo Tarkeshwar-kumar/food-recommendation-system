@@ -6,7 +6,7 @@ from client.controller.employee import Employee
 from client.controller.chef import Chef
 from client.controller.admin import Admin
 from client.exception.exceptions import NotAuthoriseError
-
+import getpass
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     client.connect(("localhost", 5000))
@@ -17,16 +17,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     
     received = Auth.authentication(client)
     response = json.loads(received.decode().replace("'", '"'))
-    print('r', response)
+
     if not response['isAuthenticated']:
-        raise NotAuthoriseError(
+        print(
             "You are not authorized to access app. Please contact admin."
         )
-    if response['user'] == "Employee":
-        user = Employee()
-    elif response['user'] == 'Chef':
-        user = Chef()
-    else:
-        user = Admin()
+    else:   
+        if response['user'] == "Employee":
+            user = Employee()
+        elif response['user'] == 'Chef':
+            user = Chef()
+        else:
+            user = Admin()
 
-    user.display_options(client)
+        user.display_options(client)

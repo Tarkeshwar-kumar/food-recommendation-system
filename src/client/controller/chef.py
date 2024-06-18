@@ -31,6 +31,6 @@ class Chef(User):
         if action == "A":
             self.roll_out_food_recommendation(client)
         elif action == "B":
-            self.view_menu()
+            self.view_menu(client)
         else:
             print("Invalid action")

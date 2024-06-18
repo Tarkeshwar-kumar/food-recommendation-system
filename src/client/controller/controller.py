@@ -1,3 +1,5 @@
+import json
+
 
 class User:
     user_id: str
@@ -10,8 +12,14 @@ class User:
     def display_options(self):
         pass
 
-    def view_menu(self):
-        pass
+    def view_menu(self, client):
+        request = {
+            "request_type" : "display_menu"
+        }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
 
     def choose_action(self):
         pass

@@ -46,6 +46,6 @@ class Employee(User):
         elif action == "B":
             self.vote_for_food_recommended_by_chef(client)
         elif action == "C":
-            self.view_menu()
+            self.view_menu(client)
         else:
             print("Invalid action")
