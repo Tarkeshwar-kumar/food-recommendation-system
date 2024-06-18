@@ -8,7 +8,8 @@ from server.model.food import Food
 from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
 from server.model.notification import Notification, AddItemNotification, RemoveItemNotification
-
+from server.db.db import DatabaseMethods
+from server.exception.exceptions import FoodDoesNotExist
 class Server:
     def __init__(self, host: str, port: int):
         self.host = host
@@ -105,9 +106,16 @@ def handle_request(user: User, json_data):
         notification.send_notification(json_data["food_name"])
         return user.change_food_availability(json_data["new_price"], json_data["availability"])
     elif request_type == "remove_item_from_menu":
-        notification = RemoveItemNotification()
-        notification.send_notification(json_data["food_name"])
-        return user.remove_item_from_menu(json_data["new_price"])
+        db = DatabaseMethods()
+        if not db.food_exists_in_menu(json_data['food_name']):
+            return {
+                "response" : FoodDoesNotExist(f"Food {json_data['food_name']} doesn\'t exist")
+            }
+        else:
+            notification = RemoveItemNotification()
+            notification.send_notification(json_data["food_name"])
+            user.remove_item_from_menu(json_data["new_price"])
+
     elif request_type == "give_feedback":
         sentiment_analyzer = RuleBasedSentiment()
         feedback = Feedback(
