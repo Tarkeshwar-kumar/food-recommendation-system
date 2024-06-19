@@ -4,6 +4,7 @@ from server.db.db import DatabaseMethods
 from server.model.food import Food
 from server.validators.validation import is_valid_food, is_valid_feedback, have_not_voted
 from server.model.feedback import Feedback
+from server.model.recommendation import Recommendation
 
 @dataclass
 class User:
@@ -71,10 +72,15 @@ class Employee(User):
             db = DatabaseMethods()
             db.insert_into_feedback(feedback)
 
-    def vote_food_recommended(user_id: str, food_name: str):
+    def vote_food_recommended(self, user_id: str, food_name: str):
         if have_not_voted(user_id):
             db = DatabaseMethods()
             db.vote_for_food_item(user_id, food_name)
+
+
+    def get_food_recommendation(self):
+        recommendation = Recommendation()
+        recommendation.recommend_food(2)
 
 class AdminService(metaclass = ABCMeta):
     @abstractmethod
@@ -94,3 +100,7 @@ class Chef(User, AdminService):
         db.delete_table()
         for food in food_list:
             db.insert_item_for_recommendation(food)
+
+    def get_food_recommendation(self):
+        recommendation = Recommendation()
+        recommendation.recommend_food(2)

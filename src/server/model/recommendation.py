@@ -44,6 +44,8 @@ class Recommendation:
             "Negative": self._negative_sentiment,
             "Neutral": self._neutral_sentiment
         }
+        if avg_rating == None:
+            avg_rating = 0
         score = avg_rating + sentiment_score[avg_sentiment]
         return score
 
@@ -53,10 +55,12 @@ class Recommendation:
             cursor = conn.cursor()
             cursor.execute(query)
             food_names = [row[0] for row in cursor.fetchall()]
+            print(food_names)
         
         food_scores = []
         for food_name in food_names:
             score = self._calculate_score(food_name)
+            # print(score)
             food_scores.append((food_name, score))
         
         food_scores.sort(key=lambda x: x[1], reverse=True)

@@ -10,23 +10,34 @@ from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
 from server.model.notification import Notification, AddItemNotification, RemoveItemNotification
 from server.exception.exceptions import FoodDoesNotExist
+from server.utils.handler import *
 
 class Server:
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
         self.server = None
+        self.threads = []
+        self.lock = threading.Lock()
 
     def start_server(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((self.host, self.port))
         self.server.listen()
         print(f"Server listening on {self.host}:{self.port}")
         
-        while True:
-            conn, addr = self.server.accept()
-            print(f"Connected by {addr}")
-            threading.Thread(target=self.handle_client, args=(conn, addr)).start()
+        try:
+            while True:
+                conn, addr = self.server.accept()
+                print(f"Connected by {addr}")
+                thread = threading.Thread(target=self.handle_client, args=(conn, addr))
+                thread.start()
+                self.threads.append(thread)
+        except Exception as e:
+            print(f"Server exception: {e}")
+        finally:
+            self.stop_server()
 
     def handle_client(self, conn, addr):
         try:
@@ -40,6 +51,9 @@ class Server:
     def stop_server(self):
         if self.server:
             self.server.close()
+        with self.lock:
+            for thread in self.threads:
+                thread.join()
 
 class RequestHandler:
     def __init__(self, connection: Any):
@@ -70,6 +84,7 @@ class RequestHandler:
         else:
             return self.handle_other_requests(json_data)
         
+        
     def handle_auth(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         db = DatabaseMethods()
         role = db.authenticate(json_data['user_id'], json_data['password'])
@@ -89,51 +104,22 @@ class RequestHandler:
             return {"status": "error", "message": "User not authenticated"}
 
 def handle_request(user: User, json_data):
-    request_type = json_data["request_type"]
-    if request_type == "display_menu":
-        return user.display_menu()
-    elif request_type == "add_item_to_menu":
-        food = Food(
-            food_name=json_data["food_name"],
-            price=json_data["price"],
-            availability_status=True,
-            category=json_data["food_type"],
-            avg_rating=0,
-            feedbacks=[],
-            food_type=json_data["food_type"]
-        )
-        notification = AddItemNotification()
-        user.add_item_to_menu(food)
-        notification.send_notification(json_data["food_name"])
-    elif request_type == "change_food_price":
-        return user.change_food_price(json_data["food_name"], json_data["new_price"])
-    elif request_type == "change_food_availability":
-        notification = AddItemNotification()
-        notification.send_notification(json_data["food_name"])
-        return user.change_food_availability(json_data["new_price"], json_data["availability"])
-    elif request_type == "remove_item_from_menu":
-        db = DatabaseMethods()
-        if not db.food_exists_in_menu(json_data['food_name']):
-            return {"response": FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")}
-        else:
-            notification = RemoveItemNotification()
-            notification.send_notification(json_data["food_name"])
-            user.remove_item_from_menu(json_data["new_price"])
-    elif request_type == "give_feedback":
-        sentiment_analyzer = RuleBasedSentiment()
-        feedback = Feedback(
-            food_name=json_data['food_name'],
-            comments=json_data['comment'],
-            rating=json_data['rating'],
-            is_liked=True if json_data['is_liked'] == "Yes" else False,
-            user_id=user.user_id,
-            sentiment=sentiment_analyzer.get_sentiment(json_data['comment'])['Sentiment']
-        )
-        return user.give_feedback_on_food(feedback)
-    elif request_type == "vote":
-        return user.vote_food_recommended(user.user_id, json_data["food_name"])
-    elif request_type == "rollout_recommendation":
-        return user.rollout_food_recommendation(json_data["recommended_food"])
+    request_type = json_data.get("request_type")
+    handlers = {
+        "display_menu": handle_display_menu,
+        "add_item_to_menu": handle_add_item_to_menu,
+        "change_food_price": handle_change_food_price,
+        "change_food_availability": handle_change_food_availability,
+        "remove_item_from_menu": handle_remove_item_from_menu,
+        "give_feedback": handle_give_feedback,
+        "vote": handle_vote,
+        "rollout_recommendation": handle_rollout_recommendation,
+        "food_recommendation": handle_food_recommendation
+        
+    }
+
+    if request_type in handlers:
+        return handlers[request_type](user, json_data)
     else:
         return {"status": "error", "message": "Invalid request"}
 

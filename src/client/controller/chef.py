@@ -26,11 +26,22 @@ class Chef(User):
         client.sendall(bytes(request_data,encoding="utf-8"))
         print(client.recv(1024))
 
+    def get_food_recommendation(self, client):
+        request= {
+            "request_type": "food_recommendation"
+        }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
+
     def choose_action(self, client):
         action = input("Choose action: ")
         if action == "A":
             self.roll_out_food_recommendation(client)
         elif action == "B":
             self.view_menu(client)
+        elif action == "C":
+            self.get_food_recommendation(client)
         else:
             print("Invalid action")

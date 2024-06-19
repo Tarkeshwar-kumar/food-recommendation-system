@@ -38,6 +38,14 @@ class Employee(User):
         client.sendall(bytes(request_data,encoding="utf-8"))
         print(client.recv(1024))
 
+    def get_food_recommendation(self, client):
+        request= {
+            "request_type": "food_recommendation"
+        }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        print(client.recv(1024))
 
     def choose_action(self, client):
         action = input("Choose action: ")
@@ -47,5 +55,7 @@ class Employee(User):
             self.vote_for_food_recommended_by_chef(client)
         elif action == "C":
             self.view_menu(client)
+        elif action == "E":
+            self.get_food_recommendation(client)
         else:
             print("Invalid action")

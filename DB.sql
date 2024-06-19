@@ -17,6 +17,12 @@ CREATE TABLE User(
 )
 
 INSERT INTO User (user_id, user_name, password, role) VALUES 
+(1, 'Pablo', 'pablo_admin', 'Admin'),
+(2, 'Ankit', 'ankit_chef', 'Chef'),
+(3, 'Tarak', 'tarak_employee', 'Employee'),
+(4, 'Priyanka', 'priyanka_employee', 'Employee'),
+(5, 'Ravi', 'ravi_employee', 'Employee'),
+(6, 'David', 'david_employee', 'Employee'),
 (7, 'Venkat', 'venkat_employee', 'Employee'),
 (8, 'Harshita', 'harshita_employee', 'Employee'),
 (9, 'Kader', 'kader_employee', 'Employee');
@@ -26,6 +32,10 @@ CREATE TABLE Menu (
     menu_name VARCHAR(100) NOT NULL,
     Timestamp DATETIME NOT NULL
 );
+
+INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES 
+(1, "MainMenu", NOW()),
+(2, 'RecommendedMenu', NOW());
 
 CREATE TABLE Food (
     food_name VARCHAR(100)  PRIMARY KEY NOT NULL,
@@ -66,15 +76,23 @@ CREATE TABLE RecommendedFood (
 CREATE TABLE Feedback (
     feedback_id INT AUTO_INCREMENT PRIMARY KEY,
     message VARCHAR(300) NOT NULL,
-    rating INT NOT NULL,
+    rating float NOT NULL,
     sentiment VARCHAR(300),
     user_id VARCHAR(30),
     food_name VARCHAR(100),
-    FOREIGN KEY (userfin_id) REFERENCES User(user_id),
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
     FOREIGN KEY (food_name) REFERENCES Food(food_name)
 );
-
-
+INSERT INTO `Feedback` (message, rating, sentiment, user_id, food_name) VALUES
+("Burger is good", 4.2, "Positive", 3, "Burger"),
+("Pancakes is not good", 1.2, "Negative", 3, "Pancakes"),
+("Steak is ok", 3.2, "Neutral", 3, "Steak"),
+("Burger is good", 4.4, "Positive", 4, "Burger"),
+("Pancakes is not good", 1.2, "Negative", 4, "Pancakes"),
+("Steak is ok", 2.2, "Neutral", 4, "Steak"),
+("Burger is good", 4.1, "Positive", 5, "Burger"),
+("Pancakes is not good", 1.2, "Negative", 5, "Pancakes"),
+("Steak is ok", 3.0, "Neutral", 5, "Steak");
 
 CREATE TABLE Notificationtype (
     notification_type_id INT PRIMARY KEY,
