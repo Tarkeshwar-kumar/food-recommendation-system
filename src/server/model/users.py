@@ -80,7 +80,7 @@ class Employee(User):
 
     def get_food_recommendation(self):
         recommendation = Recommendation()
-        recommendation.recommend_food(2)
+        return recommendation.recommend_food(2)
 
 class AdminService(metaclass = ABCMeta):
     @abstractmethod

@@ -64,10 +64,12 @@ class Recommendation:
             food_scores.append((food_name, score))
         
         food_scores.sort(key=lambda x: x[1], reverse=True)
-        top_foods = food_scores[:limit]
+        top_foods = food_scores[:]
 
         for food_name, score in top_foods:
             avg_rating = self._calculate_avg_rating(food_name)
+            if avg_rating == None:
+                avg_rating = 0
             avg_sentiment = self._calculate_avg_sentiment(food_name)
             update_query = """
                 UPDATE Food
