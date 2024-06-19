@@ -74,6 +74,7 @@ class RequestHandler:
                     "status": "success",
                     "message": result
                 }
+                print("res in server ", response)
                 self.conn.sendall(json.dumps(response).encode("utf-8"))
 
     def process_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -115,7 +116,8 @@ def handle_request(user: User, json_data):
         "give_feedback": handle_give_feedback,
         "vote": handle_vote,
         "rollout_recommendation": handle_rollout_recommendation,
-        "food_recommendation": handle_food_recommendation
+        "food_recommendation": handle_food_recommendation,
+        "check_notifications": handle_check_notification
         
     }
 

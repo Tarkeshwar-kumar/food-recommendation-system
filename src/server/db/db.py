@@ -98,10 +98,10 @@ class DatabaseMethods:
             cursor = connection.cursor()
             response = cursor.execute(
                 """
-                INSERT INTO RecommendedFood (food_name, total_vote, menu_id)
-                VALUES (%s, %s, %s);
+                INSERT INTO RecommendedFood (food_name, total_vote)
+                VALUES (%s, %s);
                 """,
-                (food_name, 0, 2)
+                (food_name, 0)
             )
             connection.commit() 
             response = cursor.fetchall()
@@ -151,20 +151,20 @@ class DatabaseMethods:
             print("feedback", feedback)
             cursor.execute(
                 """
-                INSERT INTO Feedback (message, rating, sentiment, is_liked, user_id, food_name)
-                VALUES (%s, %s, %s, %s, %s, %s);
+                INSERT INTO Feedback (message, rating, sentiment, user_id, food_name)
+                VALUES (%s, %s, %s, %s, %s);
                 """,
-                (feedback.comments, feedback.rating, feedback.sentiment, feedback.is_liked, feedback.user_id, feedback.food_name)
+                (feedback.comments, feedback.rating, feedback.sentiment, feedback.user_id, feedback.food_name)
             )
             connection.commit() 
             print("Item inserted successfully")
 
-    def have_not_voted(self, user_id: str):
+    def have_not_voted(self, user_id: str, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             cursor.execute(
                 f"""
-                    SELECT * FROM Vote where user_id='{user_id}' and have_voted=False;
+                    SELECT * FROM Vote where user_id='{user_id}' and food_name='{food_name}';
                 """
             )
             response = cursor.fetchall()
@@ -173,19 +173,32 @@ class DatabaseMethods:
                 return True
             return False
         
-    def vote_for_food_item(self, food_name: str, user_id: str):
+    def vote_for_food_item(self, user_id: str, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             cursor.execute(
                 f"""
-                    SELECT * FROM Vote where user_id='{user_id}' and have_voted=False;
-                """
+                INSERT INTO Vote (user_id, have_voted, food_name) VALUES
+                (%s, True, %s);
+                """,
+                (user_id, food_name)
             )
-            response = cursor.fetchall()
-            print(response)
-            if len(response) == 0:
-                return True
-            return False
+            connection.commit()
+            self.increase_total_vote(food_name)
+
+    def increase_total_vote(self, food_name: str):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                UPDATE RecommendedFood
+                SET total_vote = total_vote + 1
+                WHERE food_name = %s;
+                """,
+                (food_name,)
+            )
+            connection.commit()
+            print(f"Total vote for {food_name} increased by 1.")
         
     def display_menu(self):
         with DatabaseConnection() as connection:
@@ -235,3 +248,44 @@ class DatabaseMethods:
                 (user_id, notification_type_id, food_name)
             )
             connection.commit()
+
+    def fetch_notifications_for_today(self, user_id: str):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute(
+                f"""
+                    SELECT n.notification_id, nt.notification_type, n.food_name 
+                    FROM Notification n
+                    JOIN Notificationtype nt ON n.notification_type_id = nt.notification_type_id
+                    WHERE n.user_id = %s AND DATE(n.Timestamp) = CURDATE();
+                """,
+                (user_id,)
+            )
+            notifications = cursor.fetchall()
+            return notifications
+
+    def delete_notification(self, notification_id: int):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""
+                    DELETE FROM Notification 
+                    WHERE notification_id = %s;
+                """,
+                (notification_id,)
+            )
+            connection.commit()
+
+    def update_feedback(self, feedback: Feedback):
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                UPDATE Feedback
+                SET message=%s, rating=%s, sentiment=%s
+                WHERE user_id=%s AND food_name=%s;
+                """,
+                (feedback.comments, feedback.rating, feedback.sentiment, feedback.user_id, feedback.food_name)
+            )
+            connection.commit()
+            print("Feedback updated successfully")

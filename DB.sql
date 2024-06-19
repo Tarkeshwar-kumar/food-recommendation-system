@@ -64,7 +64,9 @@ INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, 
 CREATE TABLE Vote (
     user_id VARCHAR(30),
     have_voted BOOLEAN,
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    food_name VARCHAR(30),
+    FOREIGN KEY (user_id) REFERENCES User(user_id),
+    FOREIGN KEY (food_name) REFERENCES Food(food_name)
 );
 
 CREATE TABLE RecommendedFood (
@@ -76,12 +78,13 @@ CREATE TABLE RecommendedFood (
 CREATE TABLE Feedback (
     feedback_id INT AUTO_INCREMENT PRIMARY KEY,
     message VARCHAR(300) NOT NULL,
-    rating float NOT NULL,
+    rating FLOAT NOT NULL,
     sentiment VARCHAR(300),
     user_id VARCHAR(30),
     food_name VARCHAR(100),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
-    FOREIGN KEY (food_name) REFERENCES Food(food_name)
+    FOREIGN KEY (food_name) REFERENCES Food(food_name),
+    UNIQUE (user_id, food_name) 
 );
 INSERT INTO `Feedback` (message, rating, sentiment, user_id, food_name) VALUES
 ("Burger is good", 4.2, "Positive", 3, "Burger"),

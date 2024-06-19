@@ -79,16 +79,28 @@ def handle_remove_item_from_menu(user: User, json_data):
 
 
 def handle_give_feedback(user: User, json_data):
+    db = DatabaseMethods()
+    
+    if db.have_not_voted(user.user_id, json_data['food_name']):
+        return {"status": "error", "message": "User has not voted for this food item."}
+    
     sentiment_analyzer = RuleBasedSentiment()
     feedback = Feedback(
         food_name=json_data['food_name'],
         comments=json_data['comment'],
         rating=json_data['rating'],
-        is_liked=True if json_data['is_liked'] == "Yes" else False,
         user_id=user.user_id,
         sentiment=sentiment_analyzer.get_sentiment(json_data['comment'])['Sentiment']
     )
-    return user.give_feedback_on_food(feedback)
+
+    
+    if db.is_valid_feedback(json_data['food_name'], user.user_id):
+        db.insert_into_feedback(feedback)
+        return {"status": "success", "message": "Feedback added successfully."}
+    else:
+        db.update_feedback(feedback)
+        return {"status": "success", "message": "Feedback updated successfully."}
+
 
 
 def handle_vote(user: User, json_data):
@@ -101,3 +113,20 @@ def handle_rollout_recommendation(user: User, json_data):
 
 def handle_food_recommendation(user: User, json_data):
     return user.get_food_recommendation()
+
+def handle_check_notification(user: User, json_data):
+    db = DatabaseMethods()
+    notifications = db.fetch_notifications_for_today(user.user_id)
+    notification_list = []
+
+    if notifications:
+        for notification in notifications:
+            notification_list.append({
+                "notification_type": notification["notification_type"],
+                "food_name": notification["food_name"]
+            })
+            db.delete_notification(notification["notification_id"])
+
+    print("nl, ", notification_list)
+    return {"notifications": notification_list}
+

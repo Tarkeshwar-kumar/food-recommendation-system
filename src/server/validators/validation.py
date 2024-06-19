@@ -16,8 +16,8 @@ def is_valid_feedback(food_name: str, user_id: str):
         return True
     return False
 
-def have_not_voted(user_id):
+def have_not_voted(user_id, food_name):
     db = DatabaseMethods()
-    if db.have_not_voted(user_id):
+    if db.have_not_voted(user_id, food_name):
         return True
     return False

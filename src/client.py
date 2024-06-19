@@ -23,9 +23,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
             "You are not authorized to access app. Please contact admin."
         )
     else:   
-        if response['message'] == "Employee":
+        if response['message']['user'] == "Employee":
             user = Employee()
-        elif response['message'] == 'Chef':
+        elif response['message']['user'] == 'Chef':
             user = Chef()
         else:
             user = Admin()

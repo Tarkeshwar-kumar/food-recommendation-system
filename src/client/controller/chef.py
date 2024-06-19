@@ -12,28 +12,44 @@ class Chef(User):
         self.choose_action(client)
 
     def roll_out_food_recommendation(self, client):
-        number_of_items = int(input("Enter number of items: "))
-        list_of_food = []
-        for _ in range(number_of_items):
-            food_name = input("Enter food name: ")
-            list_of_food.append(food_name)
-        request= {
-            "request_type": "rollout_recommendation",
-            "recommended_food": list_of_food
-        }
-        request_data = json.dumps(request)
+        try:
+            number_of_items = int(input("Enter number of items: "))
+            list_of_food = []
+            for _ in range(number_of_items):
+                food_name = input("Enter food name: ")
+                list_of_food.append(food_name)
+            request= {
+                "request_type": "rollout_recommendation",
+                "recommended_food": list_of_food
+            }
+            request_data = json.dumps(request)
 
-        client.sendall(bytes(request_data,encoding="utf-8"))
-        print(client.recv(1024))
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+        except Exception as e:
+            print(e)
+        else:
+            print(response['message'])
+        finally:
+            self.display_options(client)
 
     def get_food_recommendation(self, client):
-        request= {
-            "request_type": "food_recommendation"
-        }
-        request_data = json.dumps(request)
+        try:
+            request= {
+                "request_type": "food_recommendation"
+            }
+            request_data = json.dumps(request)
 
-        client.sendall(bytes(request_data,encoding="utf-8"))
-        print(client.recv(1024))
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+        except Exception as e:
+            print(e)
+        else:
+            print(response['message'])
+        finally:
+            self.display_options(client)
 
     def choose_action(self, client):
         action = input("Choose action: ")

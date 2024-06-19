@@ -30,8 +30,8 @@ class User:
                 print(type(response['message']))
                 for item in response['message']:
                     if item:  
-                        name, price, discount = item
-                        print(f"Name: {name}, Price: {price}, Discount: {discount}")        
+                        name, price, rating = item
+                        print(f"Name: {name}, Price: {price}, Rating: {rating}")        
         finally:
             self.display_options(client)
 

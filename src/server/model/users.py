@@ -73,7 +73,7 @@ class Employee(User):
             db.insert_into_feedback(feedback)
 
     def vote_food_recommended(self, user_id: str, food_name: str):
-        if have_not_voted(user_id):
+        if have_not_voted(user_id, food_name):
             db = DatabaseMethods()
             db.vote_for_food_item(user_id, food_name)
 
