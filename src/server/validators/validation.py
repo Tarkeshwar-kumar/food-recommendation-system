@@ -4,7 +4,7 @@ def is_valid_user(user_id: str, password: str) -> bool:
     return True
 
 
-def is_valid_food(food) -> bool:
+def food_exists_in_menu(food) -> bool:
     db = DatabaseMethods()
     if db.food_exists_in_menu(food):
         return True

@@ -13,13 +13,27 @@ class User:
         pass
 
     def view_menu(self, client):
-        request = {
-            "request_type" : "display_menu"
-        }
-        request_data = json.dumps(request)
+        try:
+            request = {
+                "request_type" : "display_menu"
+            }
+            request_data = json.dumps(request)
 
-        client.sendall(bytes(request_data,encoding="utf-8"))
-        print(client.recv(1024))
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+
+        except Exception as e:
+            print("what", e)
+        else:
+            if response.get('status') == "success":
+                print(type(response['message']))
+                for item in response['message']:
+                    if item:  
+                        name, price, discount = item
+                        print(f"Name: {name}, Price: {price}, Discount: {discount}")        
+        finally:
+            self.display_options(client)
 
     def choose_action(self):
         pass

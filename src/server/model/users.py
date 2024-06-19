@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from abc import ABCMeta, abstractmethod
 from server.db.db import DatabaseMethods
 from server.model.food import Food
-from server.validators.validation import is_valid_food, is_valid_feedback, have_not_voted
+from server.validators.validation import food_exists_in_menu, is_valid_feedback, have_not_voted
 from server.model.feedback import Feedback
 from server.model.recommendation import Recommendation
 
@@ -19,7 +19,7 @@ class User:
 
     def display_menu(self):
         db = DatabaseMethods()
-        db.display_menu()
+        return db.display_menu()
 
 
 
@@ -49,17 +49,17 @@ class Admin(User, AdminService):
         db.insert_item_to_menu(food)
 
 
-    def change_food_price(food_id : str, new_price: float):
+    def change_food_price(self, food_id : str, new_price: float):
         db = DatabaseMethods()
         db.update_food_price(food_id, new_price)
 
 
-    def change_food_availability(food_id : str, avilability: bool):
+    def change_food_availability(self, food_id : str, avilability: bool):
         db = DatabaseMethods()
         db.update_food_availability(food_id, avilability)
 
     
-    def remove_item_from_menu(food_id : str):
+    def remove_item_from_menu(self, food_id : str):
         db = DatabaseMethods()
         db.delete_item_from_menu(food_id)
 
@@ -93,7 +93,7 @@ class Chef(User, AdminService):
     def rollout_food_recommendation(self, food_list):
 
         for food in food_list:
-            if not is_valid_food(food):
+            if not food_exists_in_menu(food):
                 raise ValueError("Food name is not valid")
         
         db = DatabaseMethods()

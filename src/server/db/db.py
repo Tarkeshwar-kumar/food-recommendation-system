@@ -60,14 +60,15 @@ class DatabaseMethods:
             response = cursor.fetchall()
             print(response)
         
-    def update_food_price(self, food_name: str):
+    def update_food_price(self, food_name: str, new_price: int):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
                 f"""
-                    INSERT INTO menu value ()
+                    UPDATE Food SET price={new_price} WHERE food_name='{food_name}';
                 """
             )
+            connection.commit()
             print(response)
 
     def update_food_availability(self, food_name:str):
@@ -84,11 +85,13 @@ class DatabaseMethods:
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
             response = cursor.execute(
-                f"""
+                f""" 
                     DELETE FROM Food WHERE food_name='{food_name}';
+
                 """
             )
-            print(response)
+            connection.commit()
+            response = cursor.fetchall()
 
     def insert_item_for_recommendation(self, food_name: str):
         with DatabaseConnection() as connection:
@@ -187,13 +190,24 @@ class DatabaseMethods:
     def display_menu(self):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
-            cursor.execute(
+            response = cursor.execute(
                 f"""
-                    SELECT * FROM Food WHERE menu_id=1;
+                    SELECT food_name, price, avg_rating FROM Food WHERE menu_id=1;
                 """
             )
+            print("    Food   ", "Price", "  Rating ")
             response = cursor.fetchall()
-            print(response)
+            print("res ", response)
+            menu_details = [[]]
+            for food_item in response:
+                food = []
+                food.append(food_item[0])
+                food.append(str(food_item[1]))
+                food.append(str(food_item[2]))
+                print("food ", food)
+                menu_details.append(food)
+
+            return menu_details
 
     def get_epmloyee_list(self):
         with DatabaseConnection() as connection:
@@ -206,10 +220,7 @@ class DatabaseMethods:
             response = cursor.fetchall()
             user_id_list = []
             for user_id in response:
-                print("user ", user_id)
                 user_id_list.append(user_id)
-
-            print("employee list", user_id_list)
 
             return user_id_list
         

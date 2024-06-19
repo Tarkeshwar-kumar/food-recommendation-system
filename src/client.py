@@ -18,14 +18,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
     received = Auth.authentication(client)
     response = json.loads(received.decode().replace("'", '"'))
 
-    if not response['isAuthenticated']:
+    if response['status'] != "success":
         print(
             "You are not authorized to access app. Please contact admin."
         )
     else:   
-        if response['user'] == "Employee":
+        if response['message'] == "Employee":
             user = Employee()
-        elif response['user'] == 'Chef':
+        elif response['message'] == 'Chef':
             user = Chef()
         else:
             user = Admin()

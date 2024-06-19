@@ -1,15 +1,12 @@
 import socket
 import json
 import threading
-from server.model.users import User, Admin, Employee, Chef
+from server.model.users import User
 from server.model.user_factory import UserFactory
 from server.db.db import DatabaseMethods
-from typing import Any, Dict, Tuple
-from server.model.food import Food
-from server.model.feedback import Feedback
-from server.utils.sentiment import RuleBasedSentiment
-from server.model.notification import Notification, AddItemNotification, RemoveItemNotification
-from server.exception.exceptions import FoodDoesNotExist
+from typing import Any, Dict
+
+
 from server.utils.handler import *
 
 class Server:
@@ -72,7 +69,11 @@ class RequestHandler:
                 if "request_type" not in json_data:
                     continue
 
-                response = self.process_request(json_data)
+                result = self.process_request(json_data)
+                response = {
+                    "status": "success",
+                    "message": result
+                }
                 self.conn.sendall(json.dumps(response).encode("utf-8"))
 
     def process_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -119,9 +120,14 @@ def handle_request(user: User, json_data):
     }
 
     if request_type in handlers:
-        return handlers[request_type](user, json_data)
+        try:
+            return handlers[request_type](user, json_data)
+        except FoodAlreadyExists as e:
+            return {"status": "error", "message": str(e)}
+        except Exception as e:
+            return {"status": "error", "message": "An unexpected error occurred: Server Error"+ str(e)}
     else:
-        return {"status": "error", "message": "Invalid request"}
+        return {"status": "error", "message": "Invalid request type"}
 
 if __name__ == "__main__":
     server = Server("localhost", 5000)

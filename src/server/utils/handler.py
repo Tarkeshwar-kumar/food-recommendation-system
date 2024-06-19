@@ -4,31 +4,52 @@ from server.model.food import Food
 from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
 from server.model.notification import AddItemNotification, RemoveItemNotification
-from server.exception.exceptions import FoodDoesNotExist
+from server.exception.exceptions import FoodDoesNotExist, FoodAlreadyExists
 from server.utils.handler import *
-
+from server.validators.validation import food_exists_in_menu
 
 def handle_display_menu(user: User, json_data):
     return user.display_menu()
 
 def handle_add_item_to_menu(user: User, json_data):
-    food = Food(
-        food_name=json_data["food_name"],
-        price=json_data["price"],
-        availability_status=True,
-        category=json_data["food_type"],
-        avg_rating=0,
-        feedbacks=[],
-        food_type=json_data["food_type"]
-    )
-    notification = AddItemNotification()
-    user.add_item_to_menu(food)
-    notification.send_notification(json_data["food_name"])
-    return {"status": "success"}
+        try:
+            if food_exists_in_menu(json_data["food_name"]):
+                raise FoodAlreadyExists(f"{json_data['food_name']} already exists")
+
+            food = Food(
+                food_name=json_data["food_name"],
+                price=json_data["price"],
+                availability_status=True,
+                category=json_data["food_type"],
+                avg_rating=0,
+                feedbacks=[],
+                food_type=json_data["food_type"]
+            )
+            notification = AddItemNotification()
+            user.add_item_to_menu(food)
+            notification.send_notification(json_data["food_name"])
+            return {"status": "success"}
+        except KeyError as e:
+            return {"status": "error", "message": f"Missing required field: {str(e)}"}
+        except ValueError as e:
+            return {"status": "error", "message": f"Invalid value: {str(e)}"}
+        except Exception as e:
+            return {"status": "error", "message": "An unexpected error occurred: " + str(e)}
 
 
 def handle_change_food_price(user: User, json_data):
-    return user.change_food_price(json_data["food_name"], json_data["new_price"])
+    try:
+        db = DatabaseMethods()
+        if not db.food_exists_in_menu(json_data['food_name']):
+            raise FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")
+        user.change_food_price(json_data["food_name"], json_data["new_price"])
+        return {"status": "success"}
+    except FoodDoesNotExist as e:
+        return {"status": "error", "message": str(e)}
+    except KeyError as e:
+        return {"status": "error", "message": f"Missing required field: {str(e)}"}
+    except Exception as e:
+        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
 
 
 def handle_change_food_availability(user: User, json_data):
@@ -38,14 +59,23 @@ def handle_change_food_availability(user: User, json_data):
 
 
 def handle_remove_item_from_menu(user: User, json_data):
-    db = DatabaseMethods()
-    if not db.food_exists_in_menu(json_data['food_name']):
-        return {"response": FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")}
-    else:
+    try:
+        db = DatabaseMethods()
+        
+        if not db.food_exists_in_menu(json_data['food_name']):
+            raise FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")
+
         notification = RemoveItemNotification()
         notification.send_notification(json_data["food_name"])
         user.remove_item_from_menu(json_data["food_name"])
-        return {"status": "success"}
+        return {"status": "success", "message": "Food item price changed successfully"}
+
+    except FoodDoesNotExist as e:
+        return {"status": "error", "message": str(e)}
+    except KeyError as e:
+        return {"status": "error", "message": f"Missing required field: {str(e)}"}
+    except Exception as e:
+        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
 
 
 def handle_give_feedback(user: User, json_data):

@@ -12,3 +12,7 @@ class InValidRequest(CustomException):
 
 class FoodDoesNotExist(CustomException):
     pass
+
+
+class FoodAlreadyExists(Exception):
+    pass
