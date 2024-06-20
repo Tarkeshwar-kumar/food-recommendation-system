@@ -29,9 +29,10 @@ class User:
             if response.get('status') == "success":
                 print(type(response['message']))
                 for item in response['message']:
+                    print("  Name  ", "  Price   ", "  Rating  ")
                     if item:  
                         name, price, rating = item
-                        print(f"Name: {name}, Price: {price}, Rating: {rating}")        
+                        print(f"  {name}  {price}  {rating}")        
         finally:
             self.display_options(client)
 

@@ -318,3 +318,42 @@ class DatabaseMethods:
             )
             connection.commit()
             print("Feedback updated successfully")
+
+    def calculate_avg_rating(self, food_name):
+        query = "SELECT AVG(rating) FROM Feedback WHERE food_name = %s"
+        with DatabaseConnection() as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, (food_name,))
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        
+    def get_sentiment(self, food_name, sentiment_scores):
+        query = "SELECT sentiment FROM Feedback WHERE food_name = %s"
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (food_name,))
+            sentiments = cursor.fetchall()
+            if not sentiments:
+                return "Neutral"
+            avg_score = sum(sentiment_scores[s[0]] for s in sentiments) / len(sentiments)
+            if avg_score > 0:
+                return "Positive"
+            elif avg_score < 0:
+                return "Negative"
+            else:
+                return "Neutral"
+            
+    def get_food_list(self):
+        query = "SELECT food_name FROM Food"
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
+            food_names = [row[0] for row in cursor.fetchall()]
+            return food_names
+
+    def update_food_ratings(self, update_query, avg_rating, avg_sentiment, food_name):
+
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(update_query, (avg_rating, avg_sentiment, food_name))
+            conn.commit()
