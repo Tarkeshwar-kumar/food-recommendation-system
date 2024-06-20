@@ -12,13 +12,3 @@ class Food:
     avg_rating: float
     feedbacks: list[Feedback]
     food_type: str
-
-    def calculate_avg_rating():
-        pass
-
-    def get_avg_rating():
-        pass
-
-    def create_food_item(json_data):
-
-        print(json_data)

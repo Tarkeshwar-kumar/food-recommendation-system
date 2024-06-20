@@ -47,6 +47,7 @@ class Server:
 
     def stop_server(self):
         if self.server:
+            print(self.threads)
             self.server.close()
         with self.lock:
             for thread in self.threads:
