@@ -54,9 +54,9 @@ class Admin(User, AdminService):
         db.update_food_price(food_id, new_price)
 
 
-    def change_food_availability(self, food_id : str, avilability: bool):
+    def change_food_availability(self, food_id : str):
         db = DatabaseMethods()
-        db.update_food_availability(food_id, avilability)
+        db.update_food_availability(food_id)
 
     
     def remove_item_from_menu(self, food_id : str):
@@ -64,8 +64,20 @@ class Admin(User, AdminService):
         db.delete_item_from_menu(food_id)
 
 
+class EmployeeService(metaclass = ABCMeta):
+    @abstractmethod
+    def give_feedback_on_food():
+        pass
+
+    @abstractmethod
+    def vote_food_recommended():
+        pass
+
+
+
+
 @dataclass
-class Employee(User):
+class Employee(User, EmployeeService):
     
     def give_feedback_on_food(self, feedback: Feedback):
         if is_valid_feedback(feedback.food_name, feedback.user_id):
@@ -80,15 +92,15 @@ class Employee(User):
 
     def get_food_recommendation(self):
         recommendation = Recommendation()
-        return recommendation.recommend_food(2)
+        return recommendation.recommend_food()
 
-class AdminService(metaclass = ABCMeta):
+class ChefService(metaclass = ABCMeta):
     @abstractmethod
     def rollout_food_recommendation():
         pass
 
 @dataclass
-class Chef(User, AdminService):
+class Chef(User, ChefService):
     
     def rollout_food_recommendation(self, food_list):
 
@@ -103,4 +115,4 @@ class Chef(User, AdminService):
 
     def get_food_recommendation(self):
         recommendation = Recommendation()
-        recommendation.recommend_food(2)
+        return recommendation.recommend_food()

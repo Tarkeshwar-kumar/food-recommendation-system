@@ -2,11 +2,15 @@ import mysql.connector
 import os
 from server.model.food import Food
 from server.model.feedback import Feedback
+from dotenv import load_dotenv
+
+
+load_dotenv()
 class DatabaseConnection:
    def __init__(self):
        self.host = "localhost"
        self.user = "root"
-       self.password = "chelsiGoyal@123"
+       self.password = os.getenv('PASSWORD')
        self.connection = None
 
    def __enter__(self):
@@ -71,15 +75,40 @@ class DatabaseMethods:
             connection.commit()
             print(response)
 
-    def update_food_availability(self, food_name:str):
+    def update_food_availability(self, food_name: str):
         with DatabaseConnection() as connection:
             cursor = connection.cursor()
-            response = cursor.execute(
-                f"""
-                    INSERT INTO menu value ()
+            
+            # Retrieve the current availability status
+            cursor.execute(
                 """
+                SELECT availability_status
+                FROM Food
+                WHERE food_name = %s;
+                """,
+                (food_name,)
             )
-            print(response)
+            result = cursor.fetchone()
+            
+            if result is not None:
+                current_status = result[0]
+                
+                # Toggle the status
+                new_availability = not current_status
+                
+                # Update the availability status
+                cursor.execute(
+                    """
+                    UPDATE Food
+                    SET availability_status = %s
+                    WHERE food_name = %s;
+                    """,
+                    (new_availability, food_name)
+                )
+                connection.commit()
+                print(f"Updated availability status of {food_name} to {new_availability}")
+            else:
+                print(f"Food item '{food_name}' not found.")
 
     def delete_item_from_menu(self, food_name: str):
         with DatabaseConnection() as connection:

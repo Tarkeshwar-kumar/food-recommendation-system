@@ -3,7 +3,7 @@ from server.db.db import DatabaseMethods
 from server.model.food import Food
 from server.model.feedback import Feedback
 from server.utils.sentiment import RuleBasedSentiment
-from server.model.notification import AddItemNotification, RemoveItemNotification
+from server.model.notification import AddItemNotification, RemoveItemNotification, FoodAvailabilityNotification
 from server.exception.exceptions import FoodDoesNotExist, FoodAlreadyExists
 from server.utils.handler import *
 from server.validators.validation import food_exists_in_menu
@@ -53,9 +53,9 @@ def handle_change_food_price(user: User, json_data):
 
 
 def handle_change_food_availability(user: User, json_data):
-    notification = AddItemNotification()
+    notification = FoodAvailabilityNotification()
     notification.send_notification(json_data["food_name"])
-    return user.change_food_availability(json_data["food_name"], json_data["availability"])
+    return user.change_food_availability(json_data["food_name"])
 
 
 def handle_remove_item_from_menu(user: User, json_data):

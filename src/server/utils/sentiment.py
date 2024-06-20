@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 
-positive_keywords = {"delicious": 3, "tasty": 2, "excellent": 3, "amazing": 3, "great": 2, "perfect": 3, "fantastic": 3, "fresh": 2, "flavorful": 2}
+positive_keywords = {"delicious": 3, "tasty": 2, "excellent": 3, "amazing": 3, "great": 2, "perfect": 3, "fantastic": 3, "fresh": 2, "flavorful": 2, "good":2}
 negative_keywords = {"terrible": 3, "awful": 2, "bad": 1, "horrible": 3, "disgusting": 3, "stale": 2, "bland": 2, "overcooked": 2, "undercooked": 2}
 neutral_keywords = {"average": 0, "okay": 0, "fine": 0, "decent": 0, "mediocre": 0}
 

@@ -94,12 +94,9 @@ class Admin(User):
     def change_food_item_availability(self, client):
         try:
             food_name = input("Enter food name: ")
-            availability = float(input("Is food available?: "))
-            availability = True if availability=="Yes" else False
             request= {
                 "request_type": "change_food_availability",
-                "food_name": food_name,
-                "availability": availability
+                "food_name": food_name
             }
             request_data = json.dumps(request)
 
@@ -111,7 +108,7 @@ class Admin(User):
             print(e)
         else:
             if response.get('status') == "success":
-                print("Food item price changed successfully")
+                print("Food availability changed successfully")
             else:
                 print(response['message'])
         finally:
