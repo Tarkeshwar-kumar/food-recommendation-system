@@ -1,5 +1,5 @@
 import json
-
+from client.utils.utils import show_menu
 
 class User:
     user_id: str
@@ -26,31 +26,24 @@ class User:
         except Exception as e:
             print("what", e)
         else:
-            if response.get('status') == "success":
-                print("Logging out")
-                exit(1)
+            print("Logging out")
+            exit(1)
 
     def view_menu(self, client):
         try:
             request = {
-                "request_type" : "display_menu"
+                "request_type": "display_menu"
             }
             request_data = json.dumps(request)
 
-            client.sendall(bytes(request_data,encoding="utf-8"))
+            client.sendall(bytes(request_data, encoding="utf-8"))
             received = client.recv(1024)
             response = json.loads(received.decode().replace("'", '"'))
 
         except Exception as e:
-            print("what", e)
+            print("Error viewing menu:", e)
         else:
-            if response.get('status') == "success":
-                print(type(response['message']))
-                for item in response['message']:
-                    print("  Name  ", "  Price   ", "  Rating  ")
-                    if item:  
-                        name, price, rating = item
-                        print(f"  {name}  {price}  {rating}")        
+            show_menu(response)            
         finally:
             self.display_options(client)
 

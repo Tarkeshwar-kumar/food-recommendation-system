@@ -64,54 +64,58 @@ class RequestHandler:
                 data = self.conn.recv(1024).decode("utf-8")
                 if not data:
                     break
-                json_data = json.loads(data)
-                print("Received:", json_data)
+                try:
+                    json_data = json.loads(data)
+                    print("Received:", json_data)
+                    
+                    if "request_type" not in json_data:
+                        self.send_response({"status": "error", "message": "Missing request_type"})
+                        continue
 
-                if "request_type" not in json_data:
-                    continue
-
-                result = self.process_request(json_data)
-                response = {
-                    "status": "success",
-                    "message": result
-                }
-                print("res in server ", response)
-                self.conn.sendall(json.dumps(response).encode("utf-8"))
+                    result = self.process_request(json_data)
+                    self.send_response(result)
+                except json.JSONDecodeError:
+                    self.send_response({"status": "error", "message": "Invalid JSON"})
+                except Exception as e:
+                    self.send_response({"status": "error", "message": f"Server error: {str(e)}"})
 
     def process_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         if json_data["request_type"] == "auth":
-            self.is_logged_in = True
-            try:
-                return self.handle_auth(json_data)
-            except Exception as e:
-                self.is_logged_in = False
-                return {"isAuthenticated": False}
-            finally:
-                auth = Auth()
-                auth.log_login_attempts(json_data['user_id'], self.is_logged_in)
+            return self.handle_auth_request(json_data)
         else:
             return self.handle_other_requests(json_data)
         
-        
-    def handle_auth(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        db = DatabaseMethods()
-        role = db.authenticate(json_data['user_id'], json_data['password'])
-        if role:
-            try:
+    def handle_auth_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        auth = Auth()
+        self.is_logged_in = False
+        try:
+            db = DatabaseMethods()
+            role = db.authenticate(json_data['user_id'], json_data['password'])
+            if role:
                 self.user = UserFactory.create_user(json_data['user_id'])
+                self.is_logged_in = True
                 return {"status": "success", "isAuthenticated": True, "user": role}
-            except ValueError as e:
-                return {"status": "error", "message": str(e)}
-        else:
-            return {"status": "error", "message": "Authentication failed"}
-        
+            else:
+                return {"status": "error", "message": "Authentication failed"}
+        except ValueError as e:
+            return {"status": "error", "message": str(e)}
+        finally:
+            auth.log_login_attempts(json_data['user_id'], self.is_logged_in)
+
     def handle_other_requests(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         if self.user is not None:
             return handle_request(self.user, json_data)
         else:
             return {"status": "error", "message": "User not authenticated"}
 
-def handle_request(user: User, json_data):
+    def send_response(self, response: Dict[str, Any]):
+        try:
+            self.conn.sendall(json.dumps(response).encode("utf-8"))
+            print("Response sent:", response)
+        except Exception as e:
+            print(f"Failed to send response: {e}")
+
+def handle_request(user: User, json_data: Dict[str, Any]) -> Dict[str, Any]:
     request_type = json_data.get("request_type")
     handlers = {
         "display_menu": handle_display_menu,
@@ -125,7 +129,6 @@ def handle_request(user: User, json_data):
         "food_recommendation": handle_food_recommendation,
         "check_notifications": handle_check_notification,
         "logout": handle_logout
-        
     }
 
     if request_type in handlers:
@@ -134,7 +137,7 @@ def handle_request(user: User, json_data):
         except FoodAlreadyExists as e:
             return {"status": "error", "message": str(e)}
         except Exception as e:
-            return {"status": "error", "message": "An unexpected error occurred: Server Error"+ str(e)}
+            return {"status": "error", "message": f"An unexpected error occurred: Server Error {str(e)}"}
     else:
         return {"status": "error", "message": "Invalid request type"}
 

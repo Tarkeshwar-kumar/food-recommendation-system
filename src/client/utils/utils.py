@@ -24,3 +24,16 @@ def show_recommendatio_table(data):
     table.align['Rating'] = 'r' 
 
     print(table)
+
+def show_menu(data):
+    table = PrettyTable(['Food', 'Price', 'Rating'])
+    for item in data:
+        if item and len(item) >= 3:
+            name, price, rating = item[:3]
+            table.add_row([name, price, rating])
+        else:
+            print(f"Invalid menu item format: {item}")
+    table.align['Food'] = 'l'
+    table.align['Price'] = 'r'
+    table.align['Rating'] = 'r'
+    print(table)
