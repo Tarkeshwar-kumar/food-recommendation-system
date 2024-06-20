@@ -357,3 +357,15 @@ class DatabaseMethods:
             cursor = conn.cursor()
             cursor.execute(update_query, (avg_rating, avg_sentiment, food_name))
             conn.commit()
+
+    def log_login_attempts(self, user_id, is_logged_in, attempt_type):
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                    INSERT INTO LoginAttempts (user_id, attempt_type, status, Timestamp) VALUES
+                    (%s, %s, %s, NOW())
+                """,
+                (user_id, attempt_type, is_logged_in)
+            )
+            conn.commit()

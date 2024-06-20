@@ -12,6 +12,24 @@ class User:
     def display_options(self):
         pass
 
+    def logout(self, client):
+        try:
+            request = {
+                "request_type" : "logout"
+            }
+            request_data = json.dumps(request)
+
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+
+        except Exception as e:
+            print("what", e)
+        else:
+            if response.get('status') == "success":
+                print("Logging out")
+                exit(1)
+
     def view_menu(self, client):
         try:
             request = {

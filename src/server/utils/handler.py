@@ -7,6 +7,8 @@ from server.model.notification import AddItemNotification, RemoveItemNotificatio
 from server.exception.exceptions import FoodDoesNotExist, FoodAlreadyExists
 from server.utils.handler import *
 from server.validators.validation import food_exists_in_menu
+from server.auth.auth import Auth
+
 
 def handle_display_menu(user: User, json_data):
     return user.display_menu()
@@ -112,7 +114,7 @@ def handle_rollout_recommendation(user: User, json_data):
 
 
 def handle_food_recommendation(user: User, json_data):
-    return user.get_food_recommendation()
+    return user.get_food_recommendation(json_data['limit'])
 
 def handle_check_notification(user: User, json_data):
     db = DatabaseMethods()
@@ -129,4 +131,9 @@ def handle_check_notification(user: User, json_data):
 
     print("nl, ", notification_list)
     return {"notifications": notification_list}
+
+def handle_logout(user: User, json_data):
+    auth = Auth()
+    auth.logout(user.user_id, json_data['request_type'])
+
 

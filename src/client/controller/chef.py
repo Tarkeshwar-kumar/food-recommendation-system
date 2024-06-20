@@ -1,7 +1,7 @@
 from client.menu.menu import options
 from client.controller.controller import User
 import json
-
+from client.utils.utils import show_recommendatio_table
 
 class Chef(User):
     
@@ -34,10 +34,11 @@ class Chef(User):
         finally:
             self.display_options(client)
 
-    def get_food_recommendation(self, client):
+    def get_food_recommendation(self, client, limit):
         try:
             request= {
-                "request_type": "food_recommendation"
+                "request_type": "food_recommendation",
+                "limit": limit
             }
             request_data = json.dumps(request)
 
@@ -47,7 +48,7 @@ class Chef(User):
         except Exception as e:
             print(e)
         else:
-            print(response['message'])
+            show_recommendatio_table(response['message'])
         finally:
             self.display_options(client)
 
@@ -58,6 +59,9 @@ class Chef(User):
         elif action == "B":
             self.view_menu(client)
         elif action == "C":
-            self.get_food_recommendation(client)
+            limit = int(input("Enter number of food in recommendation: "))
+            self.get_food_recommendation(client, limit)
+        elif action == 'D':
+            self.logout(client)
         else:
             print("Invalid action")

@@ -5,7 +5,7 @@ from server.model.users import User
 from server.model.user_factory import UserFactory
 from server.db.db import DatabaseMethods
 from typing import Any, Dict
-
+from server.auth.auth import Auth
 
 from server.utils.handler import *
 
@@ -80,10 +80,15 @@ class RequestHandler:
 
     def process_request(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         if json_data["request_type"] == "auth":
+            self.is_logged_in = True
             try:
                 return self.handle_auth(json_data)
             except Exception as e:
+                self.is_logged_in = False
                 return {"isAuthenticated": False}
+            finally:
+                auth = Auth()
+                auth.log_login_attempts(json_data['user_id'], self.is_logged_in)
         else:
             return self.handle_other_requests(json_data)
         
@@ -118,7 +123,8 @@ def handle_request(user: User, json_data):
         "vote": handle_vote,
         "rollout_recommendation": handle_rollout_recommendation,
         "food_recommendation": handle_food_recommendation,
-        "check_notifications": handle_check_notification
+        "check_notifications": handle_check_notification,
+        "logout": handle_logout
         
     }
 

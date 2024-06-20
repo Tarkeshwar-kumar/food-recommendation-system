@@ -100,5 +100,7 @@ class Employee(User):
             self.see_notification(client)
         elif action == "E":
             self.get_food_recommendation(client)
+        elif action == 'F':
+            self.logout(client)
         else:
             print("Invalid action")

@@ -126,5 +126,7 @@ class Admin(User):
             self.change_food_item_availability(client)
         elif action == "E":
             self.view_menu(client)
+        elif action == "F":
+            self.logout(client)
         else:
             print("Invalid action")

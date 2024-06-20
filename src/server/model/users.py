@@ -113,6 +113,6 @@ class Chef(User, ChefService):
         for food in food_list:
             db.insert_item_for_recommendation(food)
 
-    def get_food_recommendation(self):
+    def get_food_recommendation(self, limit):
         recommendation = Recommendation()
-        return recommendation.recommend_food()
+        return recommendation.recommend_food(limit)

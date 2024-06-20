@@ -8,6 +8,8 @@ DROP TABLE `Notificationtype`;
 DROP TABLE `RecommendedFood`;
 drop TABLE `Vote`;
 
+DROP TABLE `LoginAttempts`;
+
 CREATE TABLE User(
     user_id VARCHAR(30),
     user_name VARCHAR(30),
@@ -76,4 +78,13 @@ CREATE TABLE Notification (
     FOREIGN KEY (notification_type_id) REFERENCES Notificationtype(notification_type_id),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
     FOREIGN KEY (food_name) REFERENCES Food(food_name)
+);
+
+CREATE TABLE LoginAttempts (
+    login_attemp_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(30),
+    attempt_type VARCHAR(10) NOT NULL,
+    status BOOLEAN NOT NULL,
+    Timestamp DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
 );

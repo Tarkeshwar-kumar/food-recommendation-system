@@ -1,3 +1,5 @@
+from prettytable import PrettyTable
+
 
 def display_notifications(response):
     if response['status'] == 'success' and 'message' in response:
@@ -11,3 +13,14 @@ def display_notifications(response):
                 print(f"{food_name} Removed")
     if len(notifications) == 0:
         print("No new notifications")
+
+def show_recommendatio_table(data):
+    table = PrettyTable(['Food', 'Rating'])
+
+    for row in data:
+        table.add_row(row)
+
+    table.align['Food'] = 'l'  
+    table.align['Rating'] = 'r' 
+
+    print(table)
