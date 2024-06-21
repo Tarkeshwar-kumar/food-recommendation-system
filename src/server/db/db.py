@@ -291,6 +291,7 @@ class DatabaseMethods:
                 (user_id,)
             )
             notifications = cursor.fetchall()
+            print("notifications ", notifications)
             return notifications
 
     def delete_notification(self, notification_id: int):
@@ -367,5 +368,17 @@ class DatabaseMethods:
                     (%s, %s, %s, NOW())
                 """,
                 (user_id, attempt_type, is_logged_in)
+            )
+            conn.commit()
+
+    def add_food_to_discard_menu(self, food_name, avg_rating):
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                    INSERT INTO DiscardedFood (food_name, avg_rating) VALUES
+                    (%s, %s)
+                """,
+                (food_name, avg_rating)
             )
             conn.commit()

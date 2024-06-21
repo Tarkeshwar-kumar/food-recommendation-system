@@ -10,6 +10,9 @@ drop TABLE `Vote`;
 
 DROP TABLE `LoginAttempts`;
 
+DROP TABLE `DiscardedFood`;
+
+
 CREATE TABLE User(
     user_id VARCHAR(30),
     user_name VARCHAR(30),
@@ -24,6 +27,8 @@ CREATE TABLE Menu (
     menu_name VARCHAR(100) NOT NULL,
     Timestamp DATETIME NOT NULL
 );
+INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES
+(3, "DiscardeMenu", NOW());
 
 CREATE TABLE Food (
     food_name VARCHAR(100)  PRIMARY KEY NOT NULL,
@@ -42,13 +47,13 @@ CREATE TABLE Vote (
     have_voted BOOLEAN,
     food_name VARCHAR(30),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
-    FOREIGN KEY (food_name) REFERENCES Food(food_name)
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );
 
 CREATE TABLE RecommendedFood (
     food_name VARCHAR(100),
     total_vote INT,
-    FOREIGN KEY (food_name) REFERENCES Food(food_name)
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );
 
 CREATE TABLE Feedback (
@@ -59,7 +64,7 @@ CREATE TABLE Feedback (
     user_id VARCHAR(30),
     food_name VARCHAR(100),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
-    FOREIGN KEY (food_name) REFERENCES Food(food_name),
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE,
     UNIQUE (user_id, food_name) 
 );
 
@@ -77,7 +82,7 @@ CREATE TABLE Notification (
     food_name VARCHAR(100) NOT NULL,
     FOREIGN KEY (notification_type_id) REFERENCES Notificationtype(notification_type_id),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
-    FOREIGN KEY (food_name) REFERENCES Food(food_name)
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );
 
 CREATE TABLE LoginAttempts (
@@ -87,4 +92,11 @@ CREATE TABLE LoginAttempts (
     status BOOLEAN NOT NULL,
     Timestamp DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(user_id)
+);
+
+CREATE TABLE DiscardedFood (
+    food_name VARCHAR(100),
+    avg_rating DECIMAL(3, 2) NOT NULL,
+    avg_sentiment VARCHAR(10) DEFAULT 'Neutral',
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );

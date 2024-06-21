@@ -5,6 +5,7 @@ from server.model.food import Food
 from server.validators.validation import food_exists_in_menu, is_valid_feedback, have_not_voted
 from server.model.feedback import Feedback
 from server.model.recommendation import Recommendation
+from server.model.notification import AuditNotification
 
 @dataclass
 class User:
@@ -99,6 +100,10 @@ class ChefService(metaclass = ABCMeta):
     def rollout_food_recommendation():
         pass
 
+    @abstractmethod
+    def audit_food():
+        pass
+
 @dataclass
 class Chef(User, ChefService):
     
@@ -116,3 +121,22 @@ class Chef(User, ChefService):
     def get_food_recommendation(self, limit):
         recommendation = Recommendation()
         return recommendation.recommend_food(limit)
+    
+    def audit_food(self, user: User, json_data):
+        db = DatabaseMethods()
+        food_list = db.get_food_list()
+
+        for food in food_list:
+            avg_rating = db.calculate_avg_rating(food)
+            if avg_rating == None:
+                avg_rating = 0
+            print("rating" , avg_rating)
+            if avg_rating < 2:
+                # to implement
+                db.add_food_to_discard_menu(food, avg_rating)
+                print(food)
+                notification = AuditNotification()
+                return notification.send_notification(food)
+            
+    def submit_improvement_feedback(self):
+        pass

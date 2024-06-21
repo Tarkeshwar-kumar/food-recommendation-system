@@ -120,7 +120,7 @@ def handle_check_notification(user: User, json_data):
     db = DatabaseMethods()
     notifications = db.fetch_notifications_for_today(user.user_id)
     notification_list = []
-
+    print("nl", notification_list)
     if notifications:
         for notification in notifications:
             notification_list.append({
@@ -136,4 +136,10 @@ def handle_logout(user: User, json_data):
     auth = Auth()
     auth.logout(user.user_id, json_data['request_type'])
 
+
+def handle_audit(user: User, json_data):
+    return user.audit_food(user, json_data)
+
+def handle_submit_improvement(user: User, json_data):
+    return user.submit_improvement_feedback()
 

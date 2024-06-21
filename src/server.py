@@ -128,7 +128,9 @@ def handle_request(user: User, json_data: Dict[str, Any]) -> Dict[str, Any]:
         "rollout_recommendation": handle_rollout_recommendation,
         "food_recommendation": handle_food_recommendation,
         "check_notifications": handle_check_notification,
-        "logout": handle_logout
+        "logout": handle_logout,
+        "audit_food": handle_audit,
+        "submit_improvement": handle_submit_improvement
     }
 
     if request_type in handlers:

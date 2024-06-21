@@ -4,7 +4,7 @@ import json
 from client.utils.utils import display_notifications
  
 class Employee(User):
-    
+
     def display_options(self, client):
         for option in options['employee_options']:
             print(option, " -> ", options['employee_options'][option])
@@ -57,7 +57,8 @@ class Employee(User):
     def get_food_recommendation(self, client):
         try:
             request= {
-                "request_type": "food_recommendation"
+                "request_type": "food_recommendation",
+                "limit": 5
             }
             request_data = json.dumps(request)
 
@@ -84,9 +85,10 @@ class Employee(User):
         except Exception as e:
             print(e)
         else:
-            display_notifications(response)
+            display_notifications(response, client)
         finally:
             self.display_options(client)
+
 
     def choose_action(self, client):
         action = input("Choose action: ")

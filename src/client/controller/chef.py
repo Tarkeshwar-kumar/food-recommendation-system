@@ -48,6 +48,23 @@ class Chef(User):
         except Exception as e:
             print(e)
         else:
+            show_recommendatio_table(response)
+        finally:
+            self.display_options(client)
+
+    def audit_foods(self, client):
+        try:
+            request= {
+                "request_type": "audit_food",
+            }
+            request_data = json.dumps(request)
+
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+        except Exception as e:
+            print(e)
+        else:
             show_recommendatio_table(response['message'])
         finally:
             self.display_options(client)
@@ -63,5 +80,7 @@ class Chef(User):
             self.get_food_recommendation(client, limit)
         elif action == 'D':
             self.logout(client)
+        elif action == "E":
+            self.audit_foods(client)
         else:
             print("Invalid action")

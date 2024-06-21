@@ -1,9 +1,10 @@
 from prettytable import PrettyTable
+import json
 
 
-def display_notifications(response):
-    if response['status'] == 'success' and 'message' in response:
-        notifications = response['message'].get('notifications', [])
+def display_notifications(response, client):
+    if response.get('notifications'):
+        notifications = response.get('notifications', [])
         for notification in notifications:
             notification_type = notification['notification_type']
             food_name = notification['food_name']
@@ -11,7 +12,9 @@ def display_notifications(response):
                 print(f"{food_name} Added")
             elif notification_type == 'REMOVE_ITEM':
                 print(f"{food_name} Removed")
-    if len(notifications) == 0:
+            elif notification_type == "FOOD_AUDIT":
+                submit_improvement_feedback(food_name, client)
+    else:
         print("No new notifications")
 
 def show_recommendatio_table(data):
@@ -37,3 +40,26 @@ def show_menu(data):
     table.align['Price'] = 'r'
     table.align['Rating'] = 'r'
     print(table)
+
+def submit_improvement_feedback(food_name, client):
+    try:
+        didnt_liked = input(f"What didn’t you like about {food_name}? ")
+        like_to_taste = input(f"How would you like {food_name} to taste? ")
+        recipe = input(f"Share you own recipe: ")
+
+        request= {
+                "request_type": "submit_improvement",
+                "didnt_liked": didnt_liked,
+                "like_to_taste" : like_to_taste,
+                "recipe" : recipe
+        }
+        request_data = json.dumps(request)
+
+        client.sendall(bytes(request_data,encoding="utf-8"))
+        received = client.recv(1024)
+        response = json.loads(received.decode().replace("'", '"'))
+    except Exception as e:
+        print(e)
+    else:
+        print(response)
+

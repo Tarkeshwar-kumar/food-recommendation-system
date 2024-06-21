@@ -12,7 +12,8 @@ options = {
         "A": "Roll out food recommendation",
         "B": "View menu",
         "C": "Get food recommendation",
-        "D": "Logout"
+        "D": "Logout",
+        "E": "Audit Foods"
     },
     "employee_options": {
         "A": "Give feedback on food",
@@ -20,6 +21,7 @@ options = {
         "C": "View Menu",
         "D": "See Notifications",
         "E": "Get food recommendation",
-        "F": "Logout"
+        "F": "Logout",
+        "G": "Give"
     }
 }
