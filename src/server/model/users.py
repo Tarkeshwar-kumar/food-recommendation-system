@@ -94,6 +94,9 @@ class Employee(User, EmployeeService):
     def get_food_recommendation(self):
         recommendation = Recommendation()
         return recommendation.recommend_food()
+    
+    def update_profile(self, user_id: str, json_data):
+        pass
 
 class ChefService(metaclass = ABCMeta):
     @abstractmethod

@@ -9,3 +9,6 @@ class NotAuthoriseError(CustomException):
 
 class InValidRequest(CustomException):
     pass
+
+class WrongInput(CustomException):
+    pass

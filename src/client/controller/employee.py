@@ -2,7 +2,9 @@ from client.menu.menu import options
 from client.controller.controller import User
 import json
 from client.utils.utils import display_notifications
- 
+from client.validation.validation import validate_profile
+
+
 class Employee(User):
 
     def display_options(self, client):
@@ -89,6 +91,30 @@ class Employee(User):
         finally:
             self.display_options(client)
 
+    def update_profile(self, client):
+        try:
+            foodie_type = input("Are you [Vegetarian/ Non Vegetarian/ Eggetarian]: ")
+            spice_level = input("Please select your spice level [High/ Medium/ Low]: ")
+            preffered_type = input("What do you prefer most [North Indian/ South Indian/ Other]: ")
+            tooth_type = input("Do you have a sweet tooth [Yes/ No]: ")
+
+            validate_profile(foodie_type, spice_level, preffered_type, tooth_type)
+
+            request= {
+                "request_type": "update_profile"
+            }
+            request_data = json.dumps(request)
+
+            client.sendall(bytes(request_data,encoding="utf-8"))
+            received = client.recv(1024)
+            response = json.loads(received.decode().replace("'", '"'))
+        except Exception as e:
+            print(e)
+        else:
+            print(response)
+        finally:
+            self.display_options(client)
+
 
     def choose_action(self, client):
         action = input("Choose action: ")
@@ -104,5 +130,9 @@ class Employee(User):
             self.get_food_recommendation(client)
         elif action == 'F':
             self.logout(client)
+        elif action == "G":
+            pass
+        elif action == "H":
+            self.update_profile(client)
         else:
             print("Invalid action")

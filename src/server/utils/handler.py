@@ -143,3 +143,5 @@ def handle_audit(user: User, json_data):
 def handle_submit_improvement(user: User, json_data):
     return user.submit_improvement_feedback()
 
+def handle_update_profile(user:User, json_data):
+    return user.update_profile(user.user_id, json_data)
