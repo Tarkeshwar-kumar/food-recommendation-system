@@ -18,6 +18,10 @@ CREATE TABLE User(
     user_name VARCHAR(30),
     password VARCHAR(18),
     role VARCHAR(10),
+    spice_level VARCHAR(10) NULL,
+    tooth_type VARCHAR(10) NULL,
+    foodie_type VARCHAR(10) NULL,
+    preffered_type VARCHAR(10) NULL,
     PRIMARY KEY(user_id)
 )
 
@@ -28,7 +32,7 @@ CREATE TABLE Menu (
     Timestamp DATETIME NOT NULL
 );
 INSERT INTO Menu (menu_id, menu_name, Timestamp) VALUES
-(3, "DiscardeMenu", NOW());
+(1, "MainMenu", NOW());
 
 CREATE TABLE Food (
     food_name VARCHAR(100)  PRIMARY KEY NOT NULL,
@@ -38,6 +42,9 @@ CREATE TABLE Food (
     avg_sentiment VARCHAR(10) DEFAULT 'Neutral',
     food_type VARCHAR(100) NOT NULL,
     menu_id INT,
+    spice_level VARCHAR(30) NOT NULL,
+    is_sweet BOOLEAN NOT NULL,
+    region VARCHAR(30) NOT NULL,
     FOREIGN KEY (menu_id) REFERENCES Menu(menu_id)
 );
 
@@ -100,3 +107,18 @@ CREATE TABLE DiscardedFood (
     avg_sentiment VARCHAR(10) DEFAULT 'Neutral',
     FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );
+
+INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id, spice_level, is_sweet, region) VALUES 
+('Pancakes', 50, TRUE, 0, 'Veg', 1, "Low", False, "other"),
+('Omelette', 20, TRUE, 0, 'Egg', 1, "Medium", False, "other"),
+('French Toast', 50, TRUE, 0, 'Veg', 1, "Low", False, "other"),
+('Chicken Burger', 100, TRUE, 0, 'Non Veg', 1, "Medium", False, "other"),
+('Caesar Salad', 30, TRUE, 0, 'Veg', 1, "Low", False, "other"),
+('Chicken Sandwich', 60, TRUE, 0, 'Non Veg', 1, "Medium", False, "other"),
+('Steak', 150, FALSE, 0,'Non Veg', 1, "Medium", False, "other"),
+('Grilled Salmon', 150, TRUE, 0, 'Non Veg', 1, "Medium", False, "other"),
+('Pasta Carbonara', 200, TRUE, 0, 'Veg', 1, "Medium", False, "other"),
+('Tiramisu', 180, TRUE, 0, 'Egg', 1, "Low", True, "other"),
+('Kadhai Panner', 250, TRUE, 0, 'Veg', 1, "High", False, "North Indian"),
+('Kadhai Chicken', 270, TRUE, 0, 'Veg', 1, "High", False, "North Indian"),
+('Mysore Dosa', 90, TRUE, 0, 'Veg', 1, "High", False, "South Indian");

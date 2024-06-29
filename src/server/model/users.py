@@ -96,7 +96,8 @@ class Employee(User, EmployeeService):
         return recommendation.recommend_food()
     
     def update_profile(self, user_id: str, json_data):
-        pass
+        db = DatabaseMethods()
+        db.update_profile()
 
 class ChefService(metaclass = ABCMeta):
     @abstractmethod
