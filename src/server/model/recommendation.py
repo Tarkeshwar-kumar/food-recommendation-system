@@ -30,17 +30,18 @@ class Recommendation:
         score = avg_rating + self.sentiment_scores[avg_sentiment]
         return score
 
-    def recommend_food(self, limit=5):
+    def recommend_food(self, user_id, limit=5):
         db = DatabaseMethods()
         food_names = db.get_food_list()
         
         food_scores = []
+        max = len(food_names)
         for food_name in food_names:
             score = self._calculate_score(food_name)
             food_scores.append((food_name, score))
         
         food_scores.sort(key=lambda x: x[1], reverse=True)
-        top_foods = food_scores[:limit]
+        top_foods = food_scores[:min(limit, max)]
 
         # for food_name, score in top_foods:
         #     avg_rating = self._calculate_avg_rating(food_name)

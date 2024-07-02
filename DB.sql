@@ -18,10 +18,10 @@ CREATE TABLE User(
     user_name VARCHAR(30),
     password VARCHAR(18),
     role VARCHAR(10),
-    spice_level VARCHAR(10) NULL,
-    tooth_type VARCHAR(10) NULL,
-    foodie_type VARCHAR(10) NULL,
-    preffered_type VARCHAR(10) NULL,
+    spice_level VARCHAR(100) NULL,
+    tooth_type VARCHAR(100) NULL,
+    foodie_type VARCHAR(100) NULL,
+    preffered_type VARCHAR(100) NULL,
     PRIMARY KEY(user_id)
 )
 
@@ -122,3 +122,14 @@ INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, 
 ('Kadhai Panner', 250, TRUE, 0, 'Veg', 1, "High", False, "North Indian"),
 ('Kadhai Chicken', 270, TRUE, 0, 'Veg', 1, "High", False, "North Indian"),
 ('Mysore Dosa', 90, TRUE, 0, 'Veg', 1, "High", False, "South Indian");
+
+INSERT INTO User (user_id, user_name, password, role) VALUES 
+(1, 'Pablo', 'pablo_admin', 'Admin'),
+(2, 'Ankit', 'ankit_chef', 'Chef'),
+(3, 'Tarak', 'tarak_employee', 'Employee'),
+(4, 'Priyanka', 'priyanka_employee', 'Employee'),
+(5, 'Ravi', 'ravi_employee', 'Employee'),
+(6, 'David', 'david_employee', 'Employee'),
+(7, 'Venkat', 'venkat_employee', 'Employee'),
+(8, 'Harshita', 'harshita_employee', 'Employee'),
+(9, 'Kader', 'kader_employee', 'Employee');

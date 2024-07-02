@@ -82,10 +82,15 @@ def handle_remove_item_from_menu(user: User, json_data):
 
 def handle_give_feedback(user: User, json_data):
     db = DatabaseMethods()
+    if not db.food_exists_in_menu(json_data['food_name']):
+        return {"status": "error", "message": "Food does not exists in the menu."}
     
     if db.have_not_voted(user.user_id, json_data['food_name']):
         return {"status": "error", "message": "User has not voted for this food item."}
     
+    if float(json_data['rating']) > 5.0:
+        return {"status": "error", "message": "Rating cannot exceed 5"}
+
     sentiment_analyzer = RuleBasedSentiment()
     feedback = Feedback(
         food_name=json_data['food_name'],
@@ -114,7 +119,7 @@ def handle_rollout_recommendation(user: User, json_data):
 
 
 def handle_food_recommendation(user: User, json_data):
-    return user.get_food_recommendation(json_data['limit'])
+    return user.get_food_recommendation(user.user_id, json_data['limit'])
 
 def handle_check_notification(user: User, json_data):
     db = DatabaseMethods()

@@ -384,14 +384,13 @@ class DatabaseMethods:
             conn.commit()
 
     def update_profile(self, user_id: str, json_data):
-        tooth_type = True if json_data['tooth_type'] == 'Yes' else False
         with DatabaseConnection() as conn:
             cursor = conn.cursor()
             cursor.execute(
                 f"""
-                    UPDATE User SET foodie_type = {json_data['foodie_type']}, tooth_type = {tooth_type},
-                    spice_level = {json_data['spice_level']}, preffered_type = {json_data['preffered_type']} 
-                    WHERE user_id = {user_id}                    
+                    UPDATE User SET foodie_type ="{json_data['foodie_type']}", tooth_type = "{json_data['tooth_type']}",
+                    spice_level = "{json_data['spice_level']}", preffered_type = "{json_data['preffered_type']}"
+                    WHERE user_id = {user_id};             
                 """,
             )
             conn.commit()

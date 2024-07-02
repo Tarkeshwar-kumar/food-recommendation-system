@@ -91,13 +91,13 @@ class Employee(User, EmployeeService):
             db.vote_for_food_item(user_id, food_name)
 
 
-    def get_food_recommendation(self):
+    def get_food_recommendation(self, user_id, limit):
         recommendation = Recommendation()
-        return recommendation.recommend_food()
+        return recommendation.recommend_food(user_id, limit)
     
     def update_profile(self, user_id: str, json_data):
         db = DatabaseMethods()
-        db.update_profile()
+        db.update_profile(user_id, json_data)
 
 class ChefService(metaclass = ABCMeta):
     @abstractmethod

@@ -58,9 +58,10 @@ class Employee(User):
 
     def get_food_recommendation(self, client):
         try:
+            limit = int(input("How many food items you want to see in recommendation"))
             request= {
                 "request_type": "food_recommendation",
-                "limit": 5
+                "limit": limit
             }
             request_data = json.dumps(request)
 
@@ -101,7 +102,11 @@ class Employee(User):
             validate_profile(foodie_type, spice_level, preffered_type, tooth_type)
 
             request= {
-                "request_type": "update_profile"
+                "request_type": "update_profile",
+                "foodie_type": foodie_type,
+                "spice_level": spice_level,
+                "preffered_type": preffered_type,
+                "tooth_type": tooth_type
             }
             request_data = json.dumps(request)
 
