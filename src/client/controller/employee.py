@@ -1,7 +1,7 @@
 from client.menu.menu import options
 from client.controller.controller import User
 import json
-from client.utils.utils import display_notifications
+from client.utils.utils import display_notifications, view_recommendation
 from client.validation.validation import validate_profile
 
 
@@ -71,7 +71,7 @@ class Employee(User):
         except Exception as e:
             print(e)
         else:
-            print(response['message'])
+            view_recommendation(response)
         finally:
             self.display_options(client)
 

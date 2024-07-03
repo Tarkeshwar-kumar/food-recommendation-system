@@ -32,27 +32,17 @@ class Recommendation:
 
     def recommend_food(self, user_id, limit=5):
         db = DatabaseMethods()
-        food_names = db.get_food_list()
+        user_preferences = db.get_user_preferences(user_id)
+        food_names = db.get_food_list(user_preferences)
         
         food_scores = []
-        max = len(food_names)
-        for food_name in food_names:
-            score = self._calculate_score(food_name)
-            food_scores.append((food_name, score))
+        for food in food_names:
+            for food_name in food:
+                score = self._calculate_score(food_name)
+                food_scores.append((food_name, score))
         
         food_scores.sort(key=lambda x: x[1], reverse=True)
-        top_foods = food_scores[:min(limit, max)]
-
-        # for food_name, score in top_foods:
-        #     avg_rating = self._calculate_avg_rating(food_name)
-        #     if avg_rating == None:
-        #         avg_rating = 0
-        #     avg_sentiment = self._calculate_avg_sentiment(food_name)
-        #     update_query = """
-        #         UPDATE Food
-        #         SET avg_rating = %s, avg_sentiment = %s
-        #         WHERE food_name = %s
-        #     """
-        #     db.update_food_ratings(update_query, avg_rating, avg_sentiment, food_name)
+        top_foods = food_scores[:min(limit, len(food_scores))]
+        
 
         return top_foods

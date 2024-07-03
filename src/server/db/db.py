@@ -394,3 +394,36 @@ class DatabaseMethods:
                 """,
             )
             conn.commit()
+
+
+    def get_user_preferences(self, user_id):
+        query = """
+            SELECT spice_level, tooth_type, foodie_type, preffered_type 
+            FROM User 
+            WHERE user_id = %s
+        """
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (user_id,))
+            return cursor.fetchone()
+
+
+    def get_food_list(self, user_preferences):
+        print("up ", user_preferences)
+        query = """
+            SELECT food_name 
+            FROM Food 
+            WHERE (spice_level = %s)
+              AND (food_type = %s) 
+              AND (region = %s);
+        """
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (
+                user_preferences[0],
+                user_preferences[2], 
+                user_preferences[3],
+            ))
+            result = cursor.fetchall()
+            print(result)
+            return result

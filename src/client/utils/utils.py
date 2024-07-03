@@ -63,3 +63,16 @@ def submit_improvement_feedback(food_name, client):
     else:
         print(response)
 
+def view_recommendation(response):
+    table = PrettyTable(['Food', 'Rating'])
+
+    for item in response:
+        if item and len(item) >= 2:
+            name, rating = item[:2]
+            table.add_row([name, rating])
+        else:
+            print(f"Invalid menu item format: {item}")
+    table.align['Food'] = 'l'
+    table.align['Rating'] = 'r'
+    print(table)
+
