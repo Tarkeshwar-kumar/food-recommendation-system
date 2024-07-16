@@ -408,8 +408,7 @@ class DatabaseMethods:
             return cursor.fetchone()
 
 
-    def get_food_list(self, user_preferences):
-        print("up ", user_preferences)
+    def get_food_list_for_user(self, user_preferences):
         query = """
             SELECT food_name 
             FROM Food 
@@ -427,3 +426,11 @@ class DatabaseMethods:
             result = cursor.fetchall()
             print(result)
             return result
+        
+    def get_food_list(self):
+        query = "SELECT food_name FROM Food"
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
+            food_names = [row[0] for row in cursor.fetchall()]
+            return food_names

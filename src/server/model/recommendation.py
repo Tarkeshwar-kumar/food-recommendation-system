@@ -33,7 +33,7 @@ class Recommendation:
     def recommend_food(self, user_id, limit=5):
         db = DatabaseMethods()
         user_preferences = db.get_user_preferences(user_id)
-        food_names = db.get_food_list(user_preferences)
+        food_names = db.get_food_list_for_user(user_preferences)
         
         food_scores = []
         for food in food_names:

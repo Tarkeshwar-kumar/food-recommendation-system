@@ -133,3 +133,9 @@ INSERT INTO User (user_id, user_name, password, role) VALUES
 (7, 'Venkat', 'venkat_employee', 'Employee'),
 (8, 'Harshita', 'harshita_employee', 'Employee'),
 (9, 'Kader', 'kader_employee', 'Employee');
+
+INSERT INTO Notificationtype (notification_type_id, notification_type) VALUES
+(1, "ADD_ITEM"),
+(2, "REMOVE_ITEM"),
+(3, "FOOD_AVAILABILITY_CHANGED"),
+(4, "FOOD_AUDIT");

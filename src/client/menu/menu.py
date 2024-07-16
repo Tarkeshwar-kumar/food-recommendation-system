@@ -22,7 +22,7 @@ options = {
         "D": "See Notifications",
         "E": "Get food recommendation",
         "F": "Logout",
-        "G": "Give",
+        "G": "Give improvement feedback",
         "H": "Update profile",
     }
 }
