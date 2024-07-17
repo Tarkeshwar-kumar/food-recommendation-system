@@ -108,6 +108,16 @@ CREATE TABLE DiscardedFood (
     FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE
 );
 
+CREATE TABLE AuditFeedback (
+    user_id VARCHAR(30),
+    food_name VARCHAR(100),
+    didnt_liked VARCHAR(250) NOT NULL,
+    like_to_taste VARCHAR(600) NOT NULL,
+    recipe VARCHAR(600) NOT NULL,
+    FOREIGN KEY (food_name) REFERENCES Food(food_name) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
+);
+
 INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id, spice_level, is_sweet, region) VALUES 
 ('Pancakes', 50, TRUE, 0, 'Veg', 1, "Low", False, "other"),
 ('Omelette', 20, TRUE, 0, 'Egg', 1, "Medium", False, "other"),
@@ -139,3 +149,4 @@ INSERT INTO Notificationtype (notification_type_id, notification_type) VALUES
 (2, "REMOVE_ITEM"),
 (3, "FOOD_AVAILABILITY_CHANGED"),
 (4, "FOOD_AUDIT");
+

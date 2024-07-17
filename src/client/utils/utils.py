@@ -12,6 +12,8 @@ def display_notifications(response, client):
                 print(f"{food_name} Added")
             elif notification_type == 'REMOVE_ITEM':
                 print(f"{food_name} Removed")
+            elif notification_type == 'FOOD_AVAILABILITY_CHANGED':
+                print(f"{food_name} AVAILABILITY CHANGED")
             elif notification_type == "FOOD_AUDIT":
                 submit_improvement_feedback(food_name, client)
     else:
@@ -51,7 +53,8 @@ def submit_improvement_feedback(food_name, client):
                 "request_type": "submit_improvement",
                 "didnt_liked": didnt_liked,
                 "like_to_taste" : like_to_taste,
-                "recipe" : recipe
+                "recipe" : recipe,
+                "food": food_name
         }
         request_data = json.dumps(request)
 

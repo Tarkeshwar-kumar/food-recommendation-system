@@ -25,7 +25,10 @@ def handle_add_item_to_menu(user: User, json_data):
                 category=json_data["food_type"],
                 avg_rating=0,
                 feedbacks=[],
-                food_type=json_data["food_type"]
+                food_type=json_data["food_type"],
+                spice_level=json_data['spice_level'],
+                is_sweet=1 if json_data['is_sweet'] == "Yes" else 0,
+                region=json_data['is_sweet']
             )
             notification = AddItemNotification()
             user.add_item_to_menu(food)
@@ -57,20 +60,20 @@ def handle_change_food_price(user: User, json_data):
 def handle_change_food_availability(user: User, json_data):
     notification = FoodAvailabilityNotification()
     notification.send_notification(json_data["food_name"])
-    return user.change_food_availability(json_data["food_name"])
-
+    user.change_food_availability(json_data["food_name"])
+    return {"status": "success", "message": "Changed Food Availability"}
 
 def handle_remove_item_from_menu(user: User, json_data):
     try:
         db = DatabaseMethods()
         
         if not db.food_exists_in_menu(json_data['food_name']):
-            raise FoodDoesNotExist(f"Food {json_data['food_name']} doesn't exist")
+            raise FoodDoesNotExist(f'Food {json_data["food_name"]} doesn\'t exist')
 
         notification = RemoveItemNotification()
         notification.send_notification(json_data["food_name"])
         user.remove_item_from_menu(json_data["food_name"])
-        return {"status": "success", "message": "Food item price changed successfully"}
+        return {"status": "success", "message": "Food item removed successfully"}
 
     except FoodDoesNotExist as e:
         return {"status": "error", "message": str(e)}
@@ -146,7 +149,7 @@ def handle_audit(user: User, json_data):
     return user.audit_food(user, json_data)
 
 def handle_submit_improvement(user: User, json_data):
-    return user.submit_improvement_feedback()
+    return user.submit_improvement_feedback(user.user_id, json_data)
 
 def handle_update_profile(user:User, json_data):
     return user.update_profile(user.user_id, json_data)

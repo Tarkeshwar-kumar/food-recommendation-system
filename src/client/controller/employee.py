@@ -116,7 +116,7 @@ class Employee(User):
         except Exception as e:
             print(e)
         else:
-            print(response)
+            print("User Profile updated Successfully !")
         finally:
             self.display_options(client)
 
@@ -154,8 +154,6 @@ class Employee(User):
         elif action == 'F':
             self.logout(client)
         elif action == "G":
-            pass
-        elif action == "H":
             self.update_profile(client)
         else:
             print("Invalid action")

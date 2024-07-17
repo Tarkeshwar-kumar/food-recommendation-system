@@ -12,3 +12,6 @@ class Food:
     avg_rating: float
     feedbacks: list[Feedback]
     food_type: str
+    spice_level: str
+    is_sweet: int
+    region: str
