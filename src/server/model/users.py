@@ -74,7 +74,9 @@ class EmployeeService(metaclass = ABCMeta):
     def vote_food_recommended():
         pass
 
-
+    @abstractmethod
+    def submit_improvement_feedback(self, user_id, json_data):
+        pass
 
 
 @dataclass
@@ -98,6 +100,10 @@ class Employee(User, EmployeeService):
     def update_profile(self, user_id: str, json_data):
         db = DatabaseMethods()
         db.update_profile(user_id, json_data)
+
+    def submit_improvement_feedback(self, user_id, json_data):
+        db = DatabaseMethods()
+        db.submit_food_audit_feedback(user_id, json_data)
 
 class ChefService(metaclass = ABCMeta):
     @abstractmethod
@@ -136,11 +142,9 @@ class Chef(User, ChefService):
                 avg_rating = 0
             print("rating" , avg_rating)
             if avg_rating < 2:
-                # to implement
                 db.add_food_to_discard_menu(food, avg_rating)
                 print(food)
                 notification = AuditNotification()
                 return notification.send_notification(food)
             
-    def submit_improvement_feedback(self):
-        pass
+    

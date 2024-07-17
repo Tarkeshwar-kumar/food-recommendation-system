@@ -409,12 +409,13 @@ class DatabaseMethods:
 
 
     def get_food_list_for_user(self, user_preferences):
+        print(user_preferences)
         query = """
             SELECT food_name 
             FROM Food 
-            WHERE (spice_level = %s)
-              AND (food_type = %s) 
-              AND (region = %s);
+            WHERE ((spice_level = %s) OR (spice_level IS NULL))
+              AND ((food_type = %s) OR (food_type IS NULL))
+              AND ((region = %s) OR (region IS NULL));
         """
         with DatabaseConnection() as conn:
             cursor = conn.cursor()
@@ -434,3 +435,15 @@ class DatabaseMethods:
             cursor.execute(query)
             food_names = [row[0] for row in cursor.fetchall()]
             return food_names
+        
+    def submit_food_audit_feedback(self, user_id, json_data):
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                    INSERT INTO AuditFeedback (user_id, food_name, didnt_liked, like_to_taste, recipe) VALUES 
+                    (%s, %s, %s, %s, %s)
+                """,
+                (user_id, json_data['food'], json_data['didnt_liked'], json_data['like_to_taste'], json_data['recipe'])
+            )
+            conn.commit()
