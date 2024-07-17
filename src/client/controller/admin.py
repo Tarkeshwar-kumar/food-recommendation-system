@@ -24,11 +24,17 @@ class Admin(User):
                 return
             
             food_type = input("Enter food type: ")
+            spice_level = input("Please select food spice level [High/ Medium/ Low]: ")
+            region = input("Which regional food it is [North Indian/ South Indian/ Other]: ")
+            is_sweet = input("Is food sweet in taste [Yes/ No]: ")
             request = {
                 "request_type": "add_item_to_menu",
                 "food_name": food_name,
                 "price": price,
-                "food_type": food_type
+                "food_type": food_type,
+                "spice_level": spice_level,
+                "region": region,
+                "is_sweet": is_sweet
             }
             request_data = json.dumps(request)
 
@@ -68,7 +74,7 @@ class Admin(User):
             else:
                 print(response['message'])
         except Exception as e:
-            print(e)
+            print("Food doesn't exists")
         finally:
             self.display_options(client)
 
@@ -99,7 +105,7 @@ class Admin(User):
             else:
                 print(response['message'])
         except Exception as e:
-            print(e)
+            print("Food doesn't exists")
         finally:
             self.display_options(client)
 
@@ -119,9 +125,9 @@ class Admin(User):
             if response.get('status') == "success":
                 print("Food availability changed successfully")
             else:
-                print(response['message'])
+                print(response.get("message"))
         except Exception as e:
-            print(e)
+            print("Food doesn't exists")
         finally:
             self.display_options(client)
 

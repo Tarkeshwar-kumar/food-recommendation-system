@@ -56,8 +56,8 @@ class DatabaseMethods:
             cursor = connection.cursor()
             response = cursor.execute(
                 f"""
-                    INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id) VALUES
-                    ('{food.food_name}', {food.price}, {food.availability_status}, {food.avg_rating}, '{food.food_type}', 1);
+                    INSERT INTO Food (food_name, price, availability_status, avg_rating, food_type, menu_id, spice_level, is_sweet, region) VALUES
+                    ('{food.food_name}', {food.price}, {food.availability_status}, {food.avg_rating}, '{food.food_type}', 1, '{food.spice_level}', {food.is_sweet}, '{food.region}');
                 """
             )
             connection.commit() 
